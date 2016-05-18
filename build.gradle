@@ -11,5 +11,5 @@ buildscript {
 apply plugin: 'com.mparticle.kit'
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'io.branch.sdk.android:library:1.11.3'
 }
