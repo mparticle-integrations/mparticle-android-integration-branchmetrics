@@ -45,6 +45,7 @@ public class BranchMetricsKit extends KitIntegration implements KitIntegration.A
 
     @Override
     protected List<ReportingMessage> onKitCreate(Map<String, String> settings, Context context) {
+        Branch.disableDeviceIDFetch(MParticle.isAndroidIdDisabled());
         getBranch().initSession();
         String sendScreenEvents = settings.get(FORWARD_SCREEN_VIEWS);
         mSendScreenEvents = sendScreenEvents != null && sendScreenEvents.equalsIgnoreCase("true");
