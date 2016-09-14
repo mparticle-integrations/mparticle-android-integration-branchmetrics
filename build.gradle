@@ -11,5 +11,5 @@ buildscript {
 apply plugin: 'com.mparticle.kit'
 
 dependencies {
-    compile 'io.branch.sdk.android:library:1.13.0'
+    compile 'io.branch.sdk.android:library:1.14.5'
 }
