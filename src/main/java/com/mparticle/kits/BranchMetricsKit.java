@@ -13,7 +13,6 @@ import com.mparticle.MParticle;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.math.BigDecimal;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -86,7 +85,6 @@ public class BranchMetricsKit extends KitIntegration implements KitIntegration.A
                 }
             }
         }
-        getBranch().userCompletedAction(event.getEventName(), jsonAttributes);
         List<ReportingMessage> messages = new LinkedList<ReportingMessage>();
         messages.add(ReportingMessage.fromEvent(this, event));
         return messages;
@@ -115,7 +113,6 @@ public class BranchMetricsKit extends KitIntegration implements KitIntegration.A
 
     @Override
     public List<ReportingMessage> onActivityStopped(Activity activity) {
-        getBranch().closeSession();
         List<ReportingMessage> messageList = new LinkedList<ReportingMessage>();
         messageList.add(
                 new ReportingMessage(this, ReportingMessage.MessageType.APP_STATE_TRANSITION, System.currentTimeMillis(), null)
@@ -185,9 +182,6 @@ public class BranchMetricsKit extends KitIntegration implements KitIntegration.A
 
     @Override
     public void setUserIdentity(MParticle.IdentityType identityType, String s) {
-        if (identityType == MParticle.IdentityType.CustomerId) {
-            getBranch().setIdentity(s);
-        }
     }
 
     @Override
@@ -197,7 +191,6 @@ public class BranchMetricsKit extends KitIntegration implements KitIntegration.A
 
     @Override
     public List<ReportingMessage> logout() {
-        getBranch().logout();
         List<ReportingMessage> messageList = new LinkedList<ReportingMessage>();
         messageList.add(ReportingMessage.logoutMessage(this));
         return messageList;
