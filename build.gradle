@@ -10,6 +10,15 @@ buildscript {
 
 apply plugin: 'com.mparticle.kit'
 
+android {
+    compileSdkVersion 24
+    buildToolsVersion "24.0.1"
+
+    defaultConfig {
+        minSdkVersion 15
+    }
+}
+
 dependencies {
-    compile 'io.branch.sdk.android:library:1.14.5'
+    compile 'io.branch.sdk.android:library:2.5.7'
 }

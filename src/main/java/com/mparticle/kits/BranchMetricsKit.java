@@ -27,7 +27,7 @@ import io.branch.referral.InstallListener;
  * Embedded implementation of the Branch Metrics SDK
  * <p/>
  */
-public class BranchMetricsKit extends KitIntegration implements KitIntegration.ActivityListener, KitIntegration.EventListener, Branch.BranchReferralInitListener, KitIntegration.AttributeListener {
+public class BranchMetricsKit extends KitIntegration implements KitIntegration.EventListener, Branch.BranchReferralInitListener, KitIntegration.AttributeListener {
 
     private String BRANCH_APP_KEY = "branchKey";
     private final String FORWARD_SCREEN_VIEWS = "forwardScreenViews";
@@ -46,7 +46,7 @@ public class BranchMetricsKit extends KitIntegration implements KitIntegration.A
     @Override
     protected List<ReportingMessage> onKitCreate(Map<String, String> settings, Context context) {
         Branch.disableDeviceIDFetch(MParticle.isAndroidIdDisabled());
-        getBranch().initSession();
+        Branch.getAutoInstance(getContext().getApplicationContext(), getSettings().get(BRANCH_APP_KEY)).initSession(this);
         String sendScreenEvents = settings.get(FORWARD_SCREEN_VIEWS);
         mSendScreenEvents = sendScreenEvents != null && sendScreenEvents.equalsIgnoreCase("true");
         return null;
@@ -114,51 +114,6 @@ public class BranchMetricsKit extends KitIntegration implements KitIntegration.A
     }
 
     @Override
-    public List<ReportingMessage> onActivityStopped(Activity activity) {
-        getBranch().closeSession();
-        List<ReportingMessage> messageList = new LinkedList<ReportingMessage>();
-        messageList.add(
-                new ReportingMessage(this, ReportingMessage.MessageType.APP_STATE_TRANSITION, System.currentTimeMillis(), null)
-        );
-        return messageList;
-    }
-
-    @Override
-    public List<ReportingMessage> onActivitySaveInstanceState(Activity activity, Bundle bundle) {
-        return null;
-    }
-
-    @Override
-    public List<ReportingMessage> onActivityDestroyed(Activity activity) {
-        return null;
-    }
-
-    @Override
-    public List<ReportingMessage> onActivityCreated(Activity activity, Bundle bundle) {
-        return null;
-    }
-
-    @Override
-    public List<ReportingMessage> onActivityStarted(Activity activity) {
-        getBranch().initSession(activity);
-        List<ReportingMessage> messageList = new LinkedList<ReportingMessage>();
-        messageList.add(
-                new ReportingMessage(this, ReportingMessage.MessageType.APP_STATE_TRANSITION, System.currentTimeMillis(), null)
-        );
-        return messageList;
-    }
-
-    @Override
-    public List<ReportingMessage> onActivityResumed(Activity activity) {
-        return null;
-    }
-
-    @Override
-    public List<ReportingMessage> onActivityPaused(Activity activity) {
-        return null;
-    }
-
-    @Override
     public void setUserAttribute(String s, String s1) {
 
     }
@@ -205,7 +160,7 @@ public class BranchMetricsKit extends KitIntegration implements KitIntegration.A
 
     @Override
     public void checkForDeepLink() {
-        Branch.getAutoInstance(getContext()).initSession(this);
+        Branch.getInstance(getContext()).initSession(this);
     }
 
     @Override
