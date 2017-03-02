@@ -1,19 +1,16 @@
 buildscript {
     repositories {
         mavenLocal()
-        mavenCentral()
+        jcenter()
     }
     dependencies {
-        classpath 'com.mparticle:android-kit-plugin:+'
+        classpath 'com.mparticle:android-kit-plugin:' + project.version
     }
 }
 
 apply plugin: 'com.mparticle.kit'
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion "24.0.1"
-
     defaultConfig {
         minSdkVersion 15
     }
