@@ -17,5 +17,5 @@ android {
 }
 
 dependencies {
-    compile 'io.branch.sdk.android:library:2.5.7'
+    compile 'io.branch.sdk.android:library:2.11.1'
 }
