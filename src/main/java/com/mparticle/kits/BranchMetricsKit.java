@@ -27,11 +27,12 @@ import io.branch.referral.InstallListener;
  * Embedded implementation of the Branch Metrics SDK
  * <p/>
  */
-public class BranchMetricsKit extends KitIntegration implements KitIntegration.EventListener, Branch.BranchReferralInitListener, KitIntegration.AttributeListener {
+public class BranchMetricsKit extends KitIntegration implements KitIntegration.EventListener, Branch.BranchReferralInitListener, KitIntegration.AttributeListener, KitIntegration.ActivityListener {
 
     private String BRANCH_APP_KEY = "branchKey";
     private final String FORWARD_SCREEN_VIEWS = "forwardScreenViews";
     private boolean mSendScreenEvents;
+    private boolean backgrounded = true;
 
     @Override
     public Object getInstance() {
@@ -158,14 +159,15 @@ public class BranchMetricsKit extends KitIntegration implements KitIntegration.E
         return messageList;
     }
 
+    /**
+     * Don't do anything here - we make the call to get the latest deep link info during onResume, below.
+     */
     @Override
-    public void checkForDeepLink() {
-        Branch.getInstance(getContext()).initSession(this);
-    }
+    public void checkForDeepLink() { }
 
     @Override
     public void onInitFinished(JSONObject jsonResult, BranchError branchError) {
-        if (jsonResult != null) {
+        if (jsonResult != null && jsonResult.length() > 0) {
             DeepLinkResult result = new DeepLinkResult()
                     .setParameters(jsonResult)
                     .setServiceProviderId(this.getConfiguration().getKitId());
@@ -178,4 +180,45 @@ public class BranchMetricsKit extends KitIntegration implements KitIntegration.E
             getKitManager().onError(error);
         }
     }
+
+    @Override
+    public List<ReportingMessage> onActivityCreated(Activity activity, Bundle bundle) {
+        return null;
+    }
+
+    @Override
+    public List<ReportingMessage> onActivityStarted(Activity activity) {
+        backgrounded = MParticle.getInstance().getAppStateManager().isBackgrounded();
+        return null;
+    }
+
+    @Override
+    public List<ReportingMessage> onActivityResumed(Activity activity) {
+        if (backgrounded) {
+            Branch.getInstance(this.getContext()).initSession(this, activity);
+        }
+        return null;
+    }
+
+    @Override
+    public List<ReportingMessage> onActivityPaused(Activity activity) {
+        return null;
+    }
+
+    @Override
+    public List<ReportingMessage> onActivityStopped(Activity activity) {
+        return null;
+    }
+
+    @Override
+    public List<ReportingMessage> onActivitySaveInstanceState(Activity activity, Bundle bundle) {
+        return null;
+    }
+
+    @Override
+    public List<ReportingMessage> onActivityDestroyed(Activity activity) {
+        return null;
+    }
+
+
 }
