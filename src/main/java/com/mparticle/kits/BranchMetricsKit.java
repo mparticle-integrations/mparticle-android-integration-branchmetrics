@@ -1,19 +1,16 @@
 package com.mparticle.kits;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 
-import com.mparticle.DeepLinkError;
-import com.mparticle.DeepLinkResult;
+import com.mparticle.AttributionError;
+import com.mparticle.AttributionResult;
 import com.mparticle.MPEvent;
 import com.mparticle.MParticle;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.math.BigDecimal;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +24,7 @@ import io.branch.referral.InstallListener;
  * Embedded implementation of the Branch Metrics SDK
  * <p/>
  */
-public class BranchMetricsKit extends KitIntegration implements KitIntegration.EventListener, Branch.BranchReferralInitListener, KitIntegration.AttributeListener, KitIntegration.ActivityListener {
+public class BranchMetricsKit extends KitIntegration implements KitIntegration.EventListener, Branch.BranchReferralInitListener, KitIntegration.AttributeListener, KitIntegration.ApplicationStateListener {
 
     private String BRANCH_APP_KEY = "branchKey";
     private final String FORWARD_SCREEN_VIEWS = "forwardScreenViews";
@@ -163,18 +160,15 @@ public class BranchMetricsKit extends KitIntegration implements KitIntegration.E
      * Don't do anything here - we make the call to get the latest deep link info during onResume, below.
      */
     @Override
-    public void checkForDeepLink() { }
-
-    @Override
     public void onInitFinished(JSONObject jsonResult, BranchError branchError) {
-        if (jsonResult != null && jsonResult.length() > 0) {
-            DeepLinkResult result = new DeepLinkResult()
+            if (jsonResult != null && jsonResult.length() > 0) {
+            AttributionResult result = new AttributionResult()
                     .setParameters(jsonResult)
                     .setServiceProviderId(this.getConfiguration().getKitId());
             getKitManager().onResult(result);
         }
         if (branchError != null) {
-            DeepLinkError error = new DeepLinkError()
+            AttributionError error = new AttributionError()
                     .setMessage(branchError.toString())
                     .setServiceProviderId(this.getConfiguration().getKitId());
             getKitManager().onError(error);
@@ -182,43 +176,12 @@ public class BranchMetricsKit extends KitIntegration implements KitIntegration.E
     }
 
     @Override
-    public List<ReportingMessage> onActivityCreated(Activity activity, Bundle bundle) {
-        return null;
+    public void onApplicationForeground() {
+        Branch.getAutoInstance(getContext().getApplicationContext(), getSettings().get(BRANCH_APP_KEY)).initSession(this);
     }
 
     @Override
-    public List<ReportingMessage> onActivityStarted(Activity activity) {
-        backgrounded = MParticle.getInstance().getAppStateManager().isBackgrounded();
-        return null;
+    public void onApplicationBackground() {
+
     }
-
-    @Override
-    public List<ReportingMessage> onActivityResumed(Activity activity) {
-        if (backgrounded) {
-            Branch.getInstance(this.getContext()).initSession(this, activity);
-        }
-        return null;
-    }
-
-    @Override
-    public List<ReportingMessage> onActivityPaused(Activity activity) {
-        return null;
-    }
-
-    @Override
-    public List<ReportingMessage> onActivityStopped(Activity activity) {
-        return null;
-    }
-
-    @Override
-    public List<ReportingMessage> onActivitySaveInstanceState(Activity activity, Bundle bundle) {
-        return null;
-    }
-
-    @Override
-    public List<ReportingMessage> onActivityDestroyed(Activity activity) {
-        return null;
-    }
-
-
 }
