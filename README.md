@@ -8,7 +8,7 @@ This repository contains the [Branch](https://www.branch.io/) integration for th
 
     ```groovy
     dependencies {
-        compile 'com.mparticle:android-branch-kit:4+'
+        compile 'com.mparticle:android-branch-kit:5+'
     }
     ```
 2. Follow the mParticle Android SDK [quick-start](https://github.com/mParticle/mparticle-android-sdk), then rebuild and launch your app, and verify that you see `"Branch Metrics detected"` in the output of `adb logcat`.
