@@ -39,7 +39,8 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.logout) {
-            MParticle.getInstance().logout();
+            // Deprecated.
+            //MParticle.getInstance().logout();
             startActivity(new Intent(BaseActivity.this, LoginActivity.class));
             return true;
         }

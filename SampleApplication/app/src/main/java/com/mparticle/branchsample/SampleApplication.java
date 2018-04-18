@@ -17,7 +17,7 @@ public class SampleApplication extends Application implements AttributionListene
         super.onCreate();
 
         MParticleOptions options = MParticleOptions.builder(this)
-                .credentials("REPLACE ME", "REPLACE ME")
+                .credentials("d4c0681f72f08d40afcea87dde0ab4de", "t4frP9o6DrOK50hLvns8UHJ_PmXJxgIxpL3IW69u7i-9_Pal5ptLkIcGoxVtTgS-")
                 //Set an instance of AttributionListener
                 //this instance will continually be called whenever
                 //there is new attribution/deep linking information.

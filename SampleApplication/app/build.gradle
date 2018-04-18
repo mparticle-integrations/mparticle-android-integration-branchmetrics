@@ -31,5 +31,9 @@ dependencies {
     //TODO
     // change compile version of mParticle Branch-kit to reflect release containing most recent Branch sdk
 
-    compile 'com.mparticle:android-branch-kit:5+'
+//    compile 'com.mparticle:android-branch-kit:5+'
+
+    compile 'com.mparticle:android-core:+'
+    compile project(':')
+
 }

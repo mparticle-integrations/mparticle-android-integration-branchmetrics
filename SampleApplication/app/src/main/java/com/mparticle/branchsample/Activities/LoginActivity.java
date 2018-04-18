@@ -41,7 +41,7 @@ public class LoginActivity extends AppCompatActivity {
         mSubmit.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                MParticle.getInstance().setUserIdentity(mUserName.getText().toString(), MParticle.IdentityType.CustomerId);
+               // MParticle.getInstance().setUserIdentity(mUserName.getText().toString(), MParticle.IdentityType.CustomerId);
                 MPEvent event = new MPEvent.Builder("Log in", MParticle.EventType.UserContent)
                         .duration(300)
                         .category("Signin/Signout").build();

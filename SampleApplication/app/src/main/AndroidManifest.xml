@@ -24,24 +24,6 @@
 
         <activity android:name=".Activities.SecondActivity"/>
 
-        <activity android:name=".Activities.ThirdActivity"
-            android:launchMode="singleTask">
-            <intent-filter>
-                <data android:scheme="example" android:host="open" />
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-            </intent-filter>
-            <intent-filter>
-                <data android:scheme="https" android:host="xxxx.test-app.link" />
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-            </intent-filter>
-            </activity>
-
-        <activity android:name=".Activities.FourthActivity"/>
-
         <receiver android:name="com.mparticle.ReferrerReceiver" android:exported="true">
             <intent-filter>
                 <action android:name="com.android.vending.INSTALL_REFERRER"/>
