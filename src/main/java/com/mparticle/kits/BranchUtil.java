@@ -28,7 +28,7 @@ import io.branch.referral.util.ProductCategory;
  * </p>
  */
 
-public class BranchUtil {
+class BranchUtil {
     enum MPEventKeys {
         position,
         amount,
@@ -41,12 +41,12 @@ public class BranchUtil {
     }
     
     enum ExtraBranchEventKeys {
-        product_category;
+        product_category
     }
     
     private final HashMap<String, BRANCH_STANDARD_EVENT> BranchMParticleEventNames;
     
-    public BranchUtil() {
+    BranchUtil() {
         BranchMParticleEventNames = new HashMap<>();
         // Mapping MParticle Commerce Event names to corresponding Branch events
         BranchMParticleEventNames.put("add_to_cart", BRANCH_STANDARD_EVENT.ADD_TO_CART);
@@ -79,7 +79,7 @@ public class BranchUtil {
      * @param mParticleEventName {@link String} MParticle event name
      * @return {@link BRANCH_STANDARD_EVENT} if there a matching event for the given MParticle event
      */
-    public BRANCH_STANDARD_EVENT getBranchStandardEvent(String mParticleEventName) {
+    private BRANCH_STANDARD_EVENT getBranchStandardEvent(String mParticleEventName) {
         return BranchMParticleEventNames.get(mParticleEventName);
     }
     
@@ -89,7 +89,7 @@ public class BranchUtil {
      * @param buo          BUO representing content for the event
      * @param categoryName MPEvent / Commerce event category
      */
-    static void translateEventCategory(BranchUniversalObject buo, String categoryName) {
+    private static void translateEventCategory(BranchUniversalObject buo, String categoryName) {
         ProductCategory category = ProductCategory.getValue(categoryName);
         if (category != null) {
             buo.getContentMetadata().setProductCategory(category);
@@ -116,28 +116,28 @@ public class BranchUtil {
             this.mapObj = new HashMap<>(mapObj);
         }
         
-        public String readOutString(String key) {
+        String readOutString(String key) {
             return mapObj.remove(key);
         }
         
-        public Double readOutDouble(String key) {
+        Double readOutDouble(String key) {
             Double val = null;
             try {
                 val = Double.parseDouble(mapObj.get(key));
                 mapObj.remove(key);
-            } catch (NumberFormatException ex) {
+            } catch (Exception ignore) {
             }
             return val;
         }
         
-        public Map<String, String> getMap() {
+        Map<String, String> getMap() {
             return mapObj;
         }
     }
     
     // Region Translate MPEvents
     
-    public BranchEvent createBranchEventFromMPEvent(MPEvent mpEvent) {
+    BranchEvent createBranchEventFromMPEvent(MPEvent mpEvent) {
         BranchEvent branchEvent = createBranchEventFromEventName(mpEvent.getEventType().name());
         BranchUniversalObject buo = new BranchUniversalObject();
         branchEvent.addContentItems(buo);
@@ -232,10 +232,9 @@ public class BranchUtil {
     // End Region Translate MPEvents
     
     
-    
     // Region Translate CommerceEvents
     
-    public BranchEvent createBranchEventFromMPCommerceEvent(CommerceEvent event) {
+    BranchEvent createBranchEventFromMPCommerceEvent(CommerceEvent event) {
         BranchEvent branchEvent = createBranchEventFromEventName(event.getProductAction().toLowerCase());
         // Add all the products in the product list to Branch event
         if (event.getProducts() != null) {
@@ -248,7 +247,7 @@ public class BranchUtil {
             }
             addProductListToBranchEvent(branchEvent, event.getProducts(), event, additionalMetadata);
         }
-    
+        
         // Add all impressions to the Branch Event
         if (event.getImpressions() != null) {
             for (Impression impression : event.getImpressions()) {
@@ -267,8 +266,11 @@ public class BranchUtil {
         if (!TextUtils.isEmpty(event.getCheckoutOptions())) {
             branchEvent.addCustomDataProperty(BranchUtil.MPEventKeys.checkout_options.name(), event.getCheckoutOptions());
         }
-        if (!TextUtils.isEmpty(event.getCheckoutOptions())) {
-            branchEvent.addCustomDataProperty(BranchUtil.MPEventKeys.checkout_options.name(), event.getCheckoutOptions());
+        if (event.getCheckoutStep() != null) {
+            try {
+                branchEvent.addCustomDataProperty(MPEventKeys.checkout_step.name(), event.getCheckoutStep().toString());
+            } catch (Exception ignore) {
+            }
         }
         if (!TextUtils.isEmpty(event.getCurrency())) {
             branchEvent.setCurrency(CurrencyType.getValue(event.getCurrency()));
@@ -348,7 +350,7 @@ public class BranchUtil {
         }
     }
     
-    public void updateBranchEventWithCustomData(BranchEvent branchEvent, Map<String, String> eventAttributes) {
+    void updateBranchEventWithCustomData(BranchEvent branchEvent, Map<String, String> eventAttributes) {
         for (String key : eventAttributes.keySet()) {
             branchEvent.addCustomDataProperty(key, eventAttributes.get(key));
         }

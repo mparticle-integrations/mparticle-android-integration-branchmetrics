@@ -2,38 +2,26 @@ package com.mparticle.kits;
 
 import android.content.Context;
 import android.content.Intent;
-import android.text.TextUtils;
-import android.util.Log;
 
 import com.mparticle.AttributionError;
 import com.mparticle.AttributionResult;
 import com.mparticle.MPEvent;
 import com.mparticle.MParticle;
 import com.mparticle.commerce.CommerceEvent;
-import com.mparticle.commerce.Impression;
-import com.mparticle.commerce.Product;
-import com.mparticle.commerce.TransactionAttributes;
 import com.mparticle.internal.Logger;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import io.branch.indexing.BranchUniversalObject;
 import io.branch.referral.Branch;
 import io.branch.referral.BranchError;
-import io.branch.referral.Defines;
 import io.branch.referral.InstallListener;
 import io.branch.referral.util.BRANCH_STANDARD_EVENT;
 import io.branch.referral.util.BranchEvent;
-import io.branch.referral.util.ContentMetadata;
-import io.branch.referral.util.CurrencyType;
-import io.branch.referral.util.ProductCategory;
 
 /**
  * <p/>
@@ -43,10 +31,9 @@ import io.branch.referral.util.ProductCategory;
 public class BranchMetricsKit extends KitIntegration implements KitIntegration.EventListener, KitIntegration.CommerceListener, Branch.BranchReferralInitListener, KitIntegration.AttributeListener, KitIntegration.ApplicationStateListener {
     
     private String BRANCH_APP_KEY = "branchKey";
-    private final String FORWARD_SCREEN_VIEWS = "forwardScreenViews";
+    private static final String FORWARD_SCREEN_VIEWS = "forwardScreenViews";
     private boolean mSendScreenEvents;
-    private boolean backgrounded = true;
-    BranchUtil branchUtil;
+    private BranchUtil branchUtil;
     
     @Override
     public Object getInstance() {
@@ -94,7 +81,7 @@ public class BranchMetricsKit extends KitIntegration implements KitIntegration.E
     @Override
     public List<ReportingMessage> logEvent(MPEvent event) {
         branchUtil.createBranchEventFromMPEvent(event).logEvent(getContext());
-        List<ReportingMessage> messages = new LinkedList<ReportingMessage>();
+        List<ReportingMessage> messages = new LinkedList<>();
         messages.add(ReportingMessage.fromEvent(this, event));
         return messages;
     }
@@ -107,7 +94,7 @@ public class BranchMetricsKit extends KitIntegration implements KitIntegration.E
     @Override
     public List<ReportingMessage> logEvent(CommerceEvent commerceEvent) {
         branchUtil.createBranchEventFromMPCommerceEvent(commerceEvent).logEvent(getContext());
-        List<ReportingMessage> messages = new LinkedList<ReportingMessage>();
+        List<ReportingMessage> messages = new LinkedList<>();
         messages.add(ReportingMessage.fromEvent(this, commerceEvent));
         return messages;
     }
@@ -177,7 +164,7 @@ public class BranchMetricsKit extends KitIntegration implements KitIntegration.E
     @Override
     public List<ReportingMessage> logout() {
         getBranch().logout();
-        List<ReportingMessage> messageList = new LinkedList<ReportingMessage>();
+        List<ReportingMessage> messageList = new LinkedList<>();
         messageList.add(ReportingMessage.logoutMessage(this));
         return messageList;
     }

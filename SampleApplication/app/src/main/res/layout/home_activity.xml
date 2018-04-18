@@ -16,6 +16,7 @@
         <Button
             android:id="@+id/cmdLogSimpleEvent"
             style="@style/button_layout"
+            android:layout_marginTop="20dp"
             android:text="Track Simple Event"/>
 
         <TextView
@@ -50,6 +51,28 @@
             android:id="@+id/cmdTrackView"
             style="@style/button_layout"
             android:text="Track View"/>
+
+
+        <Button
+            android:id="@+id/cmdShareBtn"
+            style="@style/button_layout"
+            android:layout_below="@+id/report_view_btn"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:text="Share Link"/>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp">
+
+            <TextView
+                android:id="@+id/deep_link_params_txt"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="20dp"
+                android:textColor="#FFFEFEFE"/>
+        </ScrollView>
 
     </LinearLayout>
 
