@@ -8,6 +8,7 @@ import com.mparticle.AttributionResult;
 import com.mparticle.MPEvent;
 import com.mparticle.MParticle;
 import com.mparticle.commerce.CommerceEvent;
+import com.mparticle.internal.KitManager;
 import com.mparticle.internal.Logger;
 
 import org.json.JSONObject;
@@ -28,7 +29,12 @@ import io.branch.referral.util.BranchEvent;
  * Embedded implementation of the Branch Metrics SDK
  * <p/>
  */
-public class BranchMetricsKit extends KitIntegration implements KitIntegration.EventListener, KitIntegration.CommerceListener, Branch.BranchReferralInitListener, KitIntegration.AttributeListener, KitIntegration.ApplicationStateListener {
+public class BranchMetricsKit extends KitIntegration implements
+        KitIntegration.EventListener,
+        KitIntegration.CommerceListener,
+        KitIntegration.AttributeListener,
+        KitIntegration.ApplicationStateListener,
+        Branch.BranchReferralInitListener {
     
     private String BRANCH_APP_KEY = "branchKey";
     private static final String FORWARD_SCREEN_VIEWS = "forwardScreenViews";
@@ -60,24 +66,27 @@ public class BranchMetricsKit extends KitIntegration implements KitIntegration.E
     
     @Override
     public List<ReportingMessage> setOptOut(boolean b) {
-        return null;
+        getBranch().disableTracking(b);
+        List<ReportingMessage> messages = new LinkedList<>();
+        messages.add(new ReportingMessage(this, "e", System.currentTimeMillis(),null));
+        return messages;
     }
     
     @Override
     public List<ReportingMessage> leaveBreadcrumb(String s) {
         return null;
     }
-    
+
     @Override
     public List<ReportingMessage> logError(String s, Map<String, String> map) {
         return null;
     }
-    
+
     @Override
     public List<ReportingMessage> logException(Exception e, Map<String, String> map, String s) {
         return null;
     }
-    
+
     @Override
     public List<ReportingMessage> logEvent(MPEvent event) {
         branchUtil.createBranchEventFromMPEvent(event).logEvent(getContext());
@@ -158,7 +167,10 @@ public class BranchMetricsKit extends KitIntegration implements KitIntegration.E
     
     @Override
     public void removeUserIdentity(MParticle.IdentityType identityType) {
-    
+        // Logout the current user from Branch when Identity is removed.
+        if (identityType == MParticle.IdentityType.CustomerId) {
+            getBranch().logout();
+        }
     }
     
     @Override

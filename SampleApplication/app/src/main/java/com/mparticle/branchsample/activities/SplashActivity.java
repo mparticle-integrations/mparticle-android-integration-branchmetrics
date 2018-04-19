@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 
 import com.mparticle.MPEvent;
 import com.mparticle.MParticle;
@@ -23,7 +24,7 @@ import java.util.Map;
  * </p>
  */
 
-public class SplashActivity extends Activity implements SampleApplication.IBranchEvents {
+public class SplashActivity extends AppCompatActivity implements SampleApplication.IBranchEvents {
     
     private static final int SPLASH_DELAY = 1500;
     
@@ -67,7 +68,6 @@ public class SplashActivity extends Activity implements SampleApplication.IBranc
                     .category("Session").build();
             MParticle.getInstance().logEvent(event);
             intent.putExtra(HomeActivity.BRANCH_PARAMS, params.toString());
-            
         }
         new Handler().postDelayed(new Runnable() {
             @Override

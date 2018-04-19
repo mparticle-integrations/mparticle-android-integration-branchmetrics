@@ -13,11 +13,46 @@
         android:gravity="center_horizontal"
         android:orientation="vertical">
 
-        <Button
-            android:id="@+id/cmdLogSimpleEvent"
-            style="@style/button_layout"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="Track Simple Event"/>
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/cmdSetIdentity"
+                style="@style/button_layout"
+                android:layout_weight="1"
+                android:text="Set User Identity"/>
+
+            <Button
+                android:id="@+id/cmdLogout"
+                style="@style/button_layout"
+                android:layout_weight="1"
+                android:text="Logout User"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/cmdLogSimpleEvent"
+                style="@style/button_layout"
+                android:layout_weight="1"
+                android:text="Track Simple Event"/>
+
+            <Button
+                android:id="@+id/cmdTrackView"
+                style="@style/button_layout"
+                android:layout_weight="1"
+                android:text="Track View"/>
+
+        </LinearLayout>
+
 
         <TextView
             style="@style/button_layout"
@@ -35,7 +70,10 @@
             <Spinner
                 android:id="@+id/event_name_spinner"
                 style="@style/button_layout"
+                android:layout_height="20dp"
                 android:layout_weight="1"
+                android:spinnerMode="dropdown"
+                android:background="#33FEFEFE"
                 android:entries="@array/mparticle_ecom_events"/>
 
             <Button
@@ -47,19 +85,29 @@
 
         </LinearLayout>
 
-        <Button
-            android:id="@+id/cmdTrackView"
-            style="@style/button_layout"
-            android:text="Track View"/>
 
-
-        <Button
-            android:id="@+id/cmdShareBtn"
-            style="@style/button_layout"
-            android:layout_below="@+id/report_view_btn"
-            android:layout_centerHorizontal="true"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="Share Link"/>
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/cmdShareBtn"
+                style="@style/button_layout"
+                android:layout_below="@+id/report_view_btn"
+                android:layout_centerHorizontal="true"
+                android:layout_weight="1"
+                android:text="Share Link"/>
+
+            <ToggleButton
+                android:id="@+id/tracking_cntrl_btn"
+                style="@style/button_layout"
+                android:layout_weight="1"
+                android:textOff="Tracking Enabled"
+                android:textOn="Tracking Disabled"/>
+
+        </LinearLayout>
 
         <ScrollView
             android:layout_width="match_parent"

@@ -19,7 +19,6 @@ public class SampleApplication extends Application implements AttributionListene
         super.onCreate();
         instance = this;
         MParticleOptions options = MParticleOptions.builder(this)
-                //.credentials("d4c0681f72f08d40afcea87dde0ab4de", "t4frP9o6DrOK50hLvns8UHJ_PmXJxgIxpL3IW69u7i-9_Pal5ptLkIcGoxVtTgS-")
                 .credentials("fe8104a87f1fdf4d928f69c7d5dcb9bd", "x2JpLm6QXAxCMpjxRpiDHyb4-biuW7Ddl6cdwIKct1YYvNtjeSLyJRnXFDcxyPUN")
                 .attributionListener(this)
                 //Set an instance of AttributionListener

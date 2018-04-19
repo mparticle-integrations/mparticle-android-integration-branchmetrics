@@ -1,12 +1,13 @@
 package com.mparticle.branchsample.activities;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.Spinner;
+import android.widget.CompoundButton;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.mparticle.MPEvent;
 import com.mparticle.MParticle;
@@ -15,6 +16,7 @@ import com.mparticle.commerce.CommerceEvent;
 import com.mparticle.commerce.Impression;
 import com.mparticle.commerce.Product;
 import com.mparticle.commerce.TransactionAttributes;
+import com.mparticle.identity.IdentityApiRequest;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,19 +34,30 @@ import io.branch.referral.util.LinkProperties;
 import io.branch.referral.util.ProductCategory;
 import io.branch.referral.util.ShareSheetStyle;
 
-public class HomeActivity extends Activity {
+public class HomeActivity extends AppCompatActivity {
     public static final String BRANCH_PARAMS = "branch_params";
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_activity);
+        ((ToggleButton) findViewById(R.id.tracking_cntrl_btn)).setChecked(MParticle.getInstance().getOptOut());
+        //adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         
-        
-        findViewById(R.id.cmdTrackEvent).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.cmdSetIdentity).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                logCommerceEvent((String) ((Spinner) findViewById(R.id.event_name_spinner)).getSelectedItem());
+                MParticle.getInstance().Identity().login(IdentityApiRequest.withEmptyUser()
+                        .email("foo@example.com")
+                        .customerId("12332424555")
+                        .build());
+            }
+        });
+        
+        findViewById(R.id.cmdLogout).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MParticle.getInstance().Identity().logout();
             }
         });
         
@@ -66,6 +79,13 @@ public class HomeActivity extends Activity {
             @Override
             public void onClick(View view) {
                 shareBranchLink();
+            }
+        });
+        
+        ((ToggleButton) findViewById(R.id.tracking_cntrl_btn)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                MParticle.getInstance().setOptOut(isChecked);
             }
         });
         
@@ -106,6 +126,7 @@ public class HomeActivity extends Activity {
         eventInfo.put("screen_attr_key1", "screen_attr_val1");
         eventInfo.put("screen_attr_key2", "screen_attr_val2");
         MParticle.getInstance().logScreen("SecondActivity", eventInfo);
+        MParticle.getInstance().Identity().logout();
     }
     
     private void logSimpleEvent() {
