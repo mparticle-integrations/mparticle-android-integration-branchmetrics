@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
@@ -42,7 +43,6 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_activity);
         ((ToggleButton) findViewById(R.id.tracking_cntrl_btn)).setChecked(MParticle.getInstance().getOptOut());
-        //adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         
         findViewById(R.id.cmdSetIdentity).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,6 +79,13 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 shareBranchLink();
+            }
+        });
+        
+        findViewById(R.id.cmdTrackEvent).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                logCommerceEvent((String) ((Spinner) findViewById(R.id.event_name_spinner)).getSelectedItem());
             }
         });
         

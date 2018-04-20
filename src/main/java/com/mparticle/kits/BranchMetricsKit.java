@@ -68,7 +68,7 @@ public class BranchMetricsKit extends KitIntegration implements
     public List<ReportingMessage> setOptOut(boolean b) {
         getBranch().disableTracking(b);
         List<ReportingMessage> messages = new LinkedList<>();
-        messages.add(new ReportingMessage(this, "e", System.currentTimeMillis(),null));
+        messages.add(ReportingMessage.fromEvent(this, new MPEvent.Builder("setOptOut " + b, MParticle.EventType.Other).build()));
         return messages;
     }
     
@@ -76,17 +76,17 @@ public class BranchMetricsKit extends KitIntegration implements
     public List<ReportingMessage> leaveBreadcrumb(String s) {
         return null;
     }
-
+    
     @Override
     public List<ReportingMessage> logError(String s, Map<String, String> map) {
         return null;
     }
-
+    
     @Override
     public List<ReportingMessage> logException(Exception e, Map<String, String> map, String s) {
         return null;
     }
-
+    
     @Override
     public List<ReportingMessage> logEvent(MPEvent event) {
         branchUtil.createBranchEventFromMPEvent(event).logEvent(getContext());
@@ -115,10 +115,10 @@ public class BranchMetricsKit extends KitIntegration implements
             BranchEvent logScreenEvent = new BranchEvent(BRANCH_STANDARD_EVENT.VIEW_ITEM);
             branchUtil.updateBranchEventWithCustomData(logScreenEvent, eventAttributes);
             logScreenEvent.logEvent(getContext());
-            MPEvent event = new MPEvent.Builder("Viewed " + screenName, MParticle.EventType.Other)
-                    .info(eventAttributes)
-                    .build();
-            return logEvent(event);
+            
+            List<ReportingMessage> messages = new LinkedList<>();
+            messages.add(ReportingMessage.fromEvent(this, new MPEvent.Builder("Viewed " + screenName, MParticle.EventType.Other).build()));
+            return messages;
         } else {
             return null;
         }
