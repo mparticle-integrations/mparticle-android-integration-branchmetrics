@@ -10,6 +10,8 @@ import com.mparticle.MParticleOptions;
 
 import org.json.JSONObject;
 
+import io.branch.referral.Branch;
+
 public class SampleApplication extends Application implements AttributionListener {
     private IBranchEvents branchEventCallback;
     private static SampleApplication instance;
@@ -58,6 +60,12 @@ public class SampleApplication extends Application implements AttributionListene
      * If the user navigates away from the app without killing it, this callback could be invoked several times:
      * once for the initial launch, and then again each time the user taps on a link to re-open the app.
      *
+     * <p>
+     *     This method is equivalent to {@link io.branch.referral.Branch#initSession(Branch.BranchReferralInitListener)}.
+     *     This will return deep links params if the app is opened by a link click otherwise a JSONObject with ""+clicked_branch_link = false".
+     *     The below example shows how you can message this to your Activities listening for Branch deep link params.
+     * </p>
+     *
      * @param attributionResult
      **/
     @Override
@@ -81,7 +89,9 @@ public class SampleApplication extends Application implements AttributionListene
     @Override
     public void onError(AttributionError attributionError) {
         //if the Branch SDK returns an error, it will be surfaced here.
-        branchEventCallback.onBranchInitialised(new JSONObject());
+        if (branchEventCallback != null) {
+            branchEventCallback.onBranchInitialised(new JSONObject());
+        }
     }
     
     public interface IBranchEvents {
