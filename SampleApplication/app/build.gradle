@@ -28,8 +28,11 @@ dependencies {
     compile 'com.android.support:design:27.0.2'
     testCompile 'junit:junit:4.12'
 
-    //TODO
-    // change compile version of mParticle Branch-kit to reflect release containing most recent Branch sdk
 
-    compile 'com.mparticle:android-branch-kit:5+'
+    compile 'com.mparticle:android-core:+'
+    // Note: change compile version of mParticle Branch-kit to reflect release containing most recent Branch sdk
+    // For eg. compile 'com.mparticle:android-branch-kit:5+'.
+    // This sample application build the Branch-kit from the embedded Branch kit project
+    compile project(':')
+
 }
