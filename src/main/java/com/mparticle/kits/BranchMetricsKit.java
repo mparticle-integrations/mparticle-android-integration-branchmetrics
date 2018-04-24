@@ -2,6 +2,7 @@ package com.mparticle.kits;
 
 import android.content.Context;
 import android.content.Intent;
+import android.text.TextUtils;
 
 import com.mparticle.AttributionError;
 import com.mparticle.AttributionResult;
@@ -160,7 +161,7 @@ public class BranchMetricsKit extends KitIntegration implements
     
     @Override
     public void setUserIdentity(MParticle.IdentityType identityType, String s) {
-        if (identityType == MParticle.IdentityType.CustomerId) {
+        if (identityType == MParticle.IdentityType.CustomerId && !TextUtils.isEmpty(s)) {
             getBranch().setIdentity(s);
         }
     }

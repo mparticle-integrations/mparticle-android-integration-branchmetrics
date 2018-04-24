@@ -32,20 +32,21 @@ class BranchUtil {
     enum MPEventKeys {
         position,
         amount,
+        screen_name,
         impression,
         product_list_name,
         product_list_Source,
         checkout_options,
         checkout_step,
-        
+
     }
-    
+
     enum ExtraBranchEventKeys {
         product_category
     }
-    
+
     private final HashMap<String, BRANCH_STANDARD_EVENT> BranchMParticleEventNames;
-    
+
     BranchUtil() {
         BranchMParticleEventNames = new HashMap<>();
         // Mapping MParticle Commerce Event names to corresponding Branch events
@@ -56,10 +57,10 @@ class BranchUtil {
         BranchMParticleEventNames.put("purchase", BRANCH_STANDARD_EVENT.PURCHASE);
         BranchMParticleEventNames.put("view_detail", BRANCH_STANDARD_EVENT.VIEW_ITEM);
         BranchMParticleEventNames.put("checkout_option", BRANCH_STANDARD_EVENT.INITIATE_PURCHASE);
-        
+
         // Following MParticle events will be considered as Branch custom events since there is no matching events.
         // "remove_from_cart", "remove_from_wishlist", "refund";
-        
+
         // Mapping MParticle Event names to corresponding Branch events
         // Unknown,
         // Navigation,
@@ -71,8 +72,8 @@ class BranchUtil {
         // Social
         // Other
     }
-    
-    
+
+
     /**
      * Get a matching {@link BRANCH_STANDARD_EVENT} for the MParticle event name provided
      *
@@ -82,7 +83,7 @@ class BranchUtil {
     private BRANCH_STANDARD_EVENT getBranchStandardEvent(String mParticleEventName) {
         return BranchMParticleEventNames.get(mParticleEventName);
     }
-    
+
     /**
      * Translate the given MPEvent / Commerce event to {@link ProductCategory} and add to the BUO
      *
@@ -97,7 +98,7 @@ class BranchUtil {
             buo.getContentMetadata().addCustomMetadata(BranchUtil.ExtraBranchEventKeys.product_category.name(), categoryName);
         }
     }
-    
+
     private BranchEvent createBranchEventFromEventName(String eventName) {
         BranchEvent branchEvent;
         BRANCH_STANDARD_EVENT branchStandardEvent = getBranchStandardEvent(eventName);
@@ -108,18 +109,18 @@ class BranchUtil {
         }
         return branchEvent;
     }
-    
+
     static class MapReader {
         private final Map<String, String> mapObj;
-        
+
         MapReader(Map<String, String> mapObj) {
             this.mapObj = new HashMap<>(mapObj);
         }
-        
+
         String readOutString(String key) {
             return mapObj.remove(key);
         }
-        
+
         Double readOutDouble(String key) {
             Double val = null;
             try {
@@ -129,14 +130,14 @@ class BranchUtil {
             }
             return val;
         }
-        
+
         Map<String, String> getMap() {
             return mapObj;
         }
     }
-    
+
     // Region Translate MPEvents
-    
+
     BranchEvent createBranchEventFromMPEvent(MPEvent mpEvent) {
         BranchEvent branchEvent = createBranchEventFromEventName(mpEvent.getEventType().name());
         BranchUniversalObject buo = new BranchUniversalObject();
@@ -154,16 +155,16 @@ class BranchUtil {
         }
         return branchEvent;
     }
-    
+
     private void updateEventWithInfo(BranchEvent event, BranchUniversalObject buo, Map<String, String> info) {
         BranchUtil.MapReader mapReader = new BranchUtil.MapReader(info);
-        
+
         // Affiliation
         String stringValue = mapReader.readOutString(CommerceEventUtils.Constants.ATT_AFFILIATION);
         if (!TextUtils.isEmpty(stringValue)) {
             event.setAffiliation(stringValue);
         }
-        
+
         // Shipping
         Double doubleVal = mapReader.readOutDouble(CommerceEventUtils.Constants.ATT_SHIPPING);
         if (doubleVal != null) {
@@ -219,21 +220,24 @@ class BranchUtil {
         if (doubleVal != null) {
             buo.getContentMetadata().setPrice(doubleVal, null);
         }
+        // Revenue
+        doubleVal = mapReader.readOutDouble(CommerceEventUtils.Constants.ATT_PRODUCT_TOTAL_AMOUNT);
+        if (doubleVal != null) {
+            event.setRevenue(doubleVal);
+        }
         // Currency
         stringValue = mapReader.readOutString(CommerceEventUtils.Constants.ATT_ACTION_CURRENCY_CODE);
         if (!TextUtils.isEmpty(stringValue)) {
             event.setCurrency(CurrencyType.getValue(stringValue));
         }
-        Map<String, String> strippedMap = mapReader.getMap();
-        for (String key : strippedMap.keySet()) {
-            buo.getContentMetadata().addCustomMetadata(key, strippedMap.get(key));
-        }
+        // Add all other key values to custom metadata
+        updateBranchEventWithCustomData(event, mapReader.getMap());
     }
     // End Region Translate MPEvents
-    
-    
+
+
     // Region Translate CommerceEvents
-    
+
     BranchEvent createBranchEventFromMPCommerceEvent(CommerceEvent event) {
         BranchEvent branchEvent = createBranchEventFromEventName(event.getProductAction().toLowerCase());
         // Add all the products in the product list to Branch event
@@ -245,9 +249,10 @@ class BranchUtil {
             if (!TextUtils.isEmpty(event.getProductListSource())) {
                 additionalMetadata.put(BranchUtil.MPEventKeys.product_list_Source.name(), event.getProductListSource());
             }
+
             addProductListToBranchEvent(branchEvent, event.getProducts(), event, additionalMetadata);
         }
-        
+
         // Add all impressions to the Branch Event
         if (event.getImpressions() != null) {
             for (Impression impression : event.getImpressions()) {
@@ -263,8 +268,17 @@ class BranchUtil {
         if (event.getTransactionAttributes() != null) {
             updateBranchEventWithTransactionAttributes(branchEvent, event.getTransactionAttributes());
         }
+        if (!TextUtils.isEmpty(event.getProductListName())) {
+            branchEvent.addCustomDataProperty(BranchUtil.MPEventKeys.product_list_name.name(), event.getProductListName());
+        }
+        if (!TextUtils.isEmpty(event.getProductListSource())) {
+            branchEvent.addCustomDataProperty(BranchUtil.MPEventKeys.product_list_Source.name(), event.getProductListSource());
+        }
         if (!TextUtils.isEmpty(event.getCheckoutOptions())) {
             branchEvent.addCustomDataProperty(BranchUtil.MPEventKeys.checkout_options.name(), event.getCheckoutOptions());
+        }
+        if (!TextUtils.isEmpty(event.getScreen())) {
+            branchEvent.addCustomDataProperty(MPEventKeys.screen_name.name(), event.getScreen());
         }
         if (event.getCheckoutStep() != null) {
             try {
@@ -277,16 +291,16 @@ class BranchUtil {
         }
         return branchEvent;
     }
-    
+
     private void addProductListToBranchEvent(BranchEvent branchEvent, List<Product> products, CommerceEvent event, Map<String, String> additionalMetadata) {
         if (products != null) {
-            
+
             for (Product product : products) {
                 branchEvent.addContentItems(createBranchUniversalObjectFromMProduct(product, event, additionalMetadata));
             }
         }
     }
-    
+
     private BranchUniversalObject createBranchUniversalObjectFromMProduct(Product product, CommerceEvent event, Map<String, String> additionalMetadata) {
         BranchUniversalObject buo = new BranchUniversalObject();
         if (!TextUtils.isEmpty(product.getBrand())) {
@@ -321,14 +335,14 @@ class BranchUtil {
         }
         return buo;
     }
-    
+
     private void addCustomDataToBranchUniversalObject(BranchUniversalObject buo, Map<String, String> customAttr) {
         ContentMetadata contentMetadata = buo.getContentMetadata();
         for (String key : customAttr.keySet()) {
             contentMetadata.addCustomMetadata(key, customAttr.get(key));
         }
     }
-    
+
     private void updateBranchEventWithTransactionAttributes(BranchEvent event, TransactionAttributes transAttr) {
         if (!TextUtils.isEmpty(transAttr.getAffiliation())) {
             event.setAffiliation(transAttr.getAffiliation());
@@ -349,13 +363,13 @@ class BranchUtil {
             event.setTax(transAttr.getTax());
         }
     }
-    
+
     void updateBranchEventWithCustomData(BranchEvent branchEvent, Map<String, String> eventAttributes) {
         for (String key : eventAttributes.keySet()) {
             branchEvent.addCustomDataProperty(key, eventAttributes.get(key));
         }
     }
-    
+
     // End Region Translate CommerceEvents
-    
+
 }
