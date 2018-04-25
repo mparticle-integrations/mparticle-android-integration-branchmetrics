@@ -37,13 +37,13 @@ import io.branch.referral.util.ShareSheetStyle;
 
 public class HomeActivity extends AppCompatActivity {
     public static final String BRANCH_PARAMS = "branch_params";
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_activity);
         ((ToggleButton) findViewById(R.id.tracking_cntrl_btn)).setChecked(MParticle.getInstance().getOptOut());
-        
+
         findViewById(R.id.cmdSetIdentity).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -53,57 +53,57 @@ public class HomeActivity extends AppCompatActivity {
                         .build());
             }
         });
-        
+
         findViewById(R.id.cmdLogout).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 MParticle.getInstance().Identity().logout();
             }
         });
-        
+
         findViewById(R.id.cmdTrackView).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 logScreen();
             }
         });
-        
+
         findViewById(R.id.cmdLogSimpleEvent).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 logSimpleEvent();
             }
         });
-        
+
         findViewById(R.id.cmdShareBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 shareBranchLink();
             }
         });
-        
+
         findViewById(R.id.cmdTrackEvent).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 logCommerceEvent((String) ((Spinner) findViewById(R.id.event_name_spinner)).getSelectedItem());
             }
         });
-        
+
         ((ToggleButton) findViewById(R.id.tracking_cntrl_btn)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 MParticle.getInstance().setOptOut(isChecked);
             }
         });
-        
+
     }
-    
+
     @Override
     protected void onStart() {
         super.onStart();
         ((TextView) findViewById(R.id.deep_link_params_txt)).setText("");
     }
-    
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -122,25 +122,24 @@ public class HomeActivity extends AppCompatActivity {
             ((TextView) findViewById(R.id.deep_link_params_txt)).setText("");
         }
     }
-    
+
     @Override
     protected void onNewIntent(Intent intent) {
         setIntent(intent);
     }
-    
+
     private void logScreen() {
         Map<String, String> eventInfo = new HashMap<>(2);
         eventInfo.put("screen_attr_key1", "screen_attr_val1");
         eventInfo.put("screen_attr_key2", "screen_attr_val2");
         MParticle.getInstance().logScreen("SecondActivity", eventInfo);
-        MParticle.getInstance().Identity().logout();
     }
-    
+
     private void logSimpleEvent() {
         Map<String, String> eventInfo = new HashMap<>(2);
         eventInfo.put("custom_attr_key1", "custom_attr_val1");
         eventInfo.put("custom_attr_key2", "custom_attr_val2");
-        
+
         MPEvent event = new MPEvent.Builder("Simple Event", MParticle.EventType.Transaction)
                 .duration(100)
                 .info(eventInfo)
@@ -148,13 +147,13 @@ public class HomeActivity extends AppCompatActivity {
                 .build();
         MParticle.getInstance().logEvent(event);
     }
-    
+
     private void logCommerceEvent(String eventName) {
-        
+
         Map<String, String> customAttr = new HashMap<>(2);
         customAttr.put("custom_attr_key1", "custom_attr_val1");
         customAttr.put("custom_attr_key2", "custom_attr_val2");
-        
+
         Product product1 = new Product.Builder("Prod1", "my_sku", 100.00)
                 .brand("my_prod_brand")
                 .category("my_prod_category")
@@ -168,7 +167,7 @@ public class HomeActivity extends AppCompatActivity {
                 .variant("my_variant")
                 .quantity(4)
                 .build();
-        
+
         Product product2 = new Product.Builder("Impression_prod", "my_sku", 100.00)
                 .brand("my_prod_brand")
                 .category("my_prod_category")
@@ -182,7 +181,7 @@ public class HomeActivity extends AppCompatActivity {
                 .variant("my_variant")
                 .quantity(4)
                 .build();
-        
+
         Product product3 = new Product.Builder("prod3", "my_sku", 100.00)
                 .brand("my_prod_brand")
                 .category("my_prod_category")
@@ -196,7 +195,7 @@ public class HomeActivity extends AppCompatActivity {
                 .variant("my_variant")
                 .quantity(4)
                 .build();
-        
+
         TransactionAttributes attributes = new TransactionAttributes("foo-transaction-id")
                 .setCouponCode("transaction_coupon_code")
                 .setAffiliation("transaction_affiliation")
@@ -204,10 +203,9 @@ public class HomeActivity extends AppCompatActivity {
                 .setRevenue(13.5)
                 .setShipping(3.5)
                 .setTax(4.5);
-        
+
         Impression impression = new Impression("Impression", product2);
-        
-        
+
         CommerceEvent commerceEvent = new CommerceEvent.Builder(eventName, product1)
                 .currency("USD")
                 .customAttributes(customAttr)
@@ -218,8 +216,7 @@ public class HomeActivity extends AppCompatActivity {
                 .build();
         MParticle.getInstance().logEvent(commerceEvent);
     }
-    
-    
+
     private void shareBranchLink() {
         BranchUniversalObject buo = new BranchUniversalObject()
                 .setCanonicalIdentifier("item/12345")
@@ -249,8 +246,8 @@ public class HomeActivity extends AppCompatActivity {
                                 .setContentSchema(BranchContentSchema.COMMERCE_PRODUCT)
                                 .addCustomMetadata("Custom_Content_metadata_key1", "Custom_Content_metadata_val1")
                 );
-        
-        
+
+
         LinkProperties linkProperties = new LinkProperties()
                 .addTag("Tag1")
                 .setChannel("Sharing_Channel_name")
@@ -258,7 +255,7 @@ public class HomeActivity extends AppCompatActivity {
                 .addControlParameter("$android_deeplink_path", "custom/path/*")
                 .addControlParameter("$ios_url", "http://example.com/ios")
                 .setDuration(100);
-        
+
         ShareSheetStyle shareSheetStyle = new ShareSheetStyle(this, "My Sharing Message Title", "My Sharing message body")
                 .setCopyUrlStyle(getResources().getDrawable(android.R.drawable.ic_menu_send), "Save this URl", "Link added to clipboard")
                 .setMoreOptionStyle(getResources().getDrawable(android.R.drawable.ic_menu_search), "Show more")
@@ -268,9 +265,8 @@ public class HomeActivity extends AppCompatActivity {
                 .addPreferredSharingOption(SharingHelper.SHARE_WITH.TWITTER)
                 .setAsFullWidthStyle(true)
                 .setSharingTitle("Share With");
-        
+
         buo.showShareSheet(this, linkProperties, shareSheetStyle, null);
     }
-    
-    
+
 }

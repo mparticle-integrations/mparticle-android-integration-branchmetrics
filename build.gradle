@@ -6,9 +6,6 @@ buildscript {
     }
     dependencies {
         classpath 'com.mparticle:android-kit-plugin:' + project.version
-        // NOTE: Add the following to get compiled with latest kit
-        //classpath 'com.mparticle:android-kit-plugin:+'
-        //classpath 'com.android.tools.build:gradle:3.0.0'
     }
 }
 
@@ -22,6 +19,4 @@ android {
 
 dependencies {
     api 'io.branch.sdk.android:library:2.17.1'
-    // NOTE: Add the following to get compiled with latest core
-    //compile 'com.mparticle:android-kit-base:+'
 }
