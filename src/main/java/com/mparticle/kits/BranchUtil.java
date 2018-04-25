@@ -49,28 +49,18 @@ class BranchUtil {
 
     BranchUtil() {
         BranchMParticleEventNames = new HashMap<>();
-        // Mapping MParticle Commerce Event names to corresponding Branch events
-        BranchMParticleEventNames.put("add_to_cart", BRANCH_STANDARD_EVENT.ADD_TO_CART);
-        BranchMParticleEventNames.put("add_to_wishlist", BRANCH_STANDARD_EVENT.ADD_TO_WISHLIST);
-        BranchMParticleEventNames.put("checkout", BRANCH_STANDARD_EVENT.INITIATE_PURCHASE);
-        BranchMParticleEventNames.put("click", BRANCH_STANDARD_EVENT.VIEW_ITEM);
-        BranchMParticleEventNames.put("purchase", BRANCH_STANDARD_EVENT.PURCHASE);
-        BranchMParticleEventNames.put("view_detail", BRANCH_STANDARD_EVENT.VIEW_ITEM);
-        BranchMParticleEventNames.put("checkout_option", BRANCH_STANDARD_EVENT.INITIATE_PURCHASE);
+        // Mapping MParticle Commerce Event names to possible matches in Branch events
+        BranchMParticleEventNames.put(Product.ADD_TO_CART, BRANCH_STANDARD_EVENT.ADD_TO_CART);
+        BranchMParticleEventNames.put(Product.ADD_TO_WISHLIST, BRANCH_STANDARD_EVENT.ADD_TO_WISHLIST);
+        BranchMParticleEventNames.put(Product.CHECKOUT, BRANCH_STANDARD_EVENT.INITIATE_PURCHASE);
+        BranchMParticleEventNames.put(Product.CLICK, BRANCH_STANDARD_EVENT.VIEW_ITEM);
+        BranchMParticleEventNames.put(Product.PURCHASE, BRANCH_STANDARD_EVENT.PURCHASE);
+        BranchMParticleEventNames.put(Product.DETAIL, BRANCH_STANDARD_EVENT.VIEW_ITEM);
+        BranchMParticleEventNames.put(Product.CHECKOUT_OPTION, BRANCH_STANDARD_EVENT.INITIATE_PURCHASE);
 
-        // Following MParticle events will be considered as Branch custom events since there is no matching events.
-        // "remove_from_cart", "remove_from_wishlist", "refund";
-
-        // Mapping MParticle Event names to corresponding Branch events
-        // Unknown,
-        // Navigation,
-        // Location,
         BranchMParticleEventNames.put(MParticle.EventType.Search.name(), BRANCH_STANDARD_EVENT.SEARCH);
         BranchMParticleEventNames.put(MParticle.EventType.Transaction.name(), BRANCH_STANDARD_EVENT.PURCHASE);
         BranchMParticleEventNames.put(MParticle.EventType.UserContent.name(), BRANCH_STANDARD_EVENT.VIEW_ITEM);
-        // UserPreference
-        // Social
-        // Other
     }
 
 
@@ -233,6 +223,7 @@ class BranchUtil {
         // Add all other key values to custom metadata
         updateBranchEventWithCustomData(event, mapReader.getMap());
     }
+
     // End Region Translate MPEvents
 
 
