@@ -96,11 +96,10 @@ class BranchUtil {
         String branchStandardEvent = getBranchStandardEvent(eventName);
         if (branchStandardEvent != null) {
             branchEvent = new BranchEvent(branchStandardEvent);
-            branchEvent.setDescription(eventName);
         } else {
             branchEvent = new BranchEvent(eventName.toUpperCase());
-            branchEvent.setDescription(eventName);
         }
+        branchEvent.setDescription(eventName);
         return branchEvent;
     }
 
