@@ -63,7 +63,6 @@ class BranchUtil {
         BranchMParticleEventNames.put(Product.REFUND, "REFUND");
         BranchMParticleEventNames.put(Promotion.VIEW, "VIEW_PROMOTION");
         BranchMParticleEventNames.put(Promotion.CLICK, "CLICK_PROMOTION");
-//        BranchMParticleEventNames.put(Impression, "IMPRESSION");
     }
 
 
