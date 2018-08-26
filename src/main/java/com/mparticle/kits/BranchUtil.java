@@ -7,6 +7,7 @@ import com.mparticle.MParticle;
 import com.mparticle.commerce.CommerceEvent;
 import com.mparticle.commerce.Impression;
 import com.mparticle.commerce.Product;
+import com.mparticle.commerce.Promotion;
 import com.mparticle.commerce.TransactionAttributes;
 
 import java.util.HashMap;
@@ -45,22 +46,24 @@ class BranchUtil {
         product_category
     }
 
-    private final HashMap<String, BRANCH_STANDARD_EVENT> BranchMParticleEventNames;
+    private final HashMap<String, String> BranchMParticleEventNames;
 
     BranchUtil() {
         BranchMParticleEventNames = new HashMap<>();
         // Mapping MParticle Commerce Event names to possible matches in Branch events
-        BranchMParticleEventNames.put(Product.ADD_TO_CART, BRANCH_STANDARD_EVENT.ADD_TO_CART);
-        BranchMParticleEventNames.put(Product.ADD_TO_WISHLIST, BRANCH_STANDARD_EVENT.ADD_TO_WISHLIST);
-        BranchMParticleEventNames.put(Product.CHECKOUT, BRANCH_STANDARD_EVENT.INITIATE_PURCHASE);
-        BranchMParticleEventNames.put(Product.CLICK, BRANCH_STANDARD_EVENT.VIEW_ITEM);
-        BranchMParticleEventNames.put(Product.PURCHASE, BRANCH_STANDARD_EVENT.PURCHASE);
-        BranchMParticleEventNames.put(Product.DETAIL, BRANCH_STANDARD_EVENT.VIEW_ITEM);
-        BranchMParticleEventNames.put(Product.CHECKOUT_OPTION, BRANCH_STANDARD_EVENT.INITIATE_PURCHASE);
-
-        BranchMParticleEventNames.put(MParticle.EventType.Search.name(), BRANCH_STANDARD_EVENT.SEARCH);
-        BranchMParticleEventNames.put(MParticle.EventType.Transaction.name(), BRANCH_STANDARD_EVENT.PURCHASE);
-        BranchMParticleEventNames.put(MParticle.EventType.UserContent.name(), BRANCH_STANDARD_EVENT.VIEW_ITEM);
+        BranchMParticleEventNames.put(Product.ADD_TO_CART, BRANCH_STANDARD_EVENT.ADD_TO_CART.getName());
+        BranchMParticleEventNames.put(Product.REMOVE_FROM_CART, "REMOVE_FROM_CART");
+        BranchMParticleEventNames.put(Product.ADD_TO_WISHLIST, BRANCH_STANDARD_EVENT.ADD_TO_WISHLIST.getName());
+        BranchMParticleEventNames.put(Product.REMOVE_FROM_WISHLIST, "REMOVE_FROM_WISHLIST");
+        BranchMParticleEventNames.put(Product.CHECKOUT, BRANCH_STANDARD_EVENT.INITIATE_PURCHASE.getName());
+        BranchMParticleEventNames.put(Product.CLICK, "CLICK_ITEM");
+        BranchMParticleEventNames.put(Product.PURCHASE, BRANCH_STANDARD_EVENT.PURCHASE.getName());
+        BranchMParticleEventNames.put(Product.DETAIL, BRANCH_STANDARD_EVENT.VIEW_ITEM.getName());
+        BranchMParticleEventNames.put(Product.CHECKOUT_OPTION, "PURCHASE_OPTION");
+        BranchMParticleEventNames.put(Product.REFUND, "REFUND");
+        BranchMParticleEventNames.put(Promotion.VIEW, "VIEW_PROMOTION");
+        BranchMParticleEventNames.put(Promotion.CLICK, "CLICK_PROMOTION");
+//        BranchMParticleEventNames.put(Impression, "IMPRESSION");
     }
 
 
@@ -70,7 +73,7 @@ class BranchUtil {
      * @param mParticleEventName {@link String} MParticle event name
      * @return {@link BRANCH_STANDARD_EVENT} if there a matching event for the given MParticle event
      */
-    private BRANCH_STANDARD_EVENT getBranchStandardEvent(String mParticleEventName) {
+    private String getBranchStandardEvent(String mParticleEventName) {
         return BranchMParticleEventNames.get(mParticleEventName);
     }
 
@@ -91,11 +94,13 @@ class BranchUtil {
 
     private BranchEvent createBranchEventFromEventName(String eventName) {
         BranchEvent branchEvent;
-        BRANCH_STANDARD_EVENT branchStandardEvent = getBranchStandardEvent(eventName);
+        String branchStandardEvent = getBranchStandardEvent(eventName);
         if (branchStandardEvent != null) {
             branchEvent = new BranchEvent(branchStandardEvent);
+            branchEvent.setDescription(eventName);
         } else {
             branchEvent = new BranchEvent(eventName.toUpperCase());
+            branchEvent.setDescription(eventName);
         }
         return branchEvent;
     }
