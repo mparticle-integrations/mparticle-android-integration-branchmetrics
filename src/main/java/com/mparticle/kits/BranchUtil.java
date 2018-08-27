@@ -62,6 +62,7 @@ class BranchUtil {
         BranchMParticleEventNames.put(Product.DETAIL, BRANCH_STANDARD_EVENT.VIEW_ITEM.getName());
         BranchMParticleEventNames.put(Product.CHECKOUT_OPTION, "PURCHASE_OPTION");
         BranchMParticleEventNames.put(Product.REFUND, "REFUND");
+        BranchMParticleEventNames.put(MPEventKeys.impression.name(), "IMPRESSION");
 
         BranchMParticlePromotionEventNames = new HashMap<>();
         BranchMParticlePromotionEventNames.put(Promotion.VIEW, "VIEW_PROMOTION");
@@ -253,6 +254,8 @@ class BranchUtil {
             branchEvent = createBranchEventFromEventName(event.getProductAction().toLowerCase());
         } else if (event.getPromotionAction().toLowerCase() != null) {
             branchEvent = createBranchEventFromPromotionEventName(event.getPromotionAction().toLowerCase());
+        } else {
+            branchEvent = createBranchEventFromEventName(MPEventKeys.impression.name());
         }
         // Add all the products in the product list to Branch event
         if (event.getProducts() != null) {
