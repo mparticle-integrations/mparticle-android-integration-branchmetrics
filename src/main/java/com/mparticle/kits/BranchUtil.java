@@ -101,7 +101,7 @@ class BranchUtil {
         if (branchStandardEvent != null) {
             branchEvent = new BranchEvent(branchStandardEvent);
         } else {
-            branchEvent = new BranchEvent(eventName.toUpperCase());
+            branchEvent = new BranchEvent(eventName);
         }
         branchEvent.setDescription(eventName);
         return branchEvent;
@@ -148,7 +148,7 @@ class BranchUtil {
     // Region Translate MPEvents
 
     BranchEvent createBranchEventFromMPEvent(MPEvent mpEvent) {
-        BranchEvent branchEvent = createBranchEventFromEventName(mpEvent.getEventType().name());
+        BranchEvent branchEvent = createBranchEventFromEventName(mpEvent.getEventName());
         BranchUniversalObject buo = new BranchUniversalObject();
         branchEvent.addContentItems(buo);
         // Apply event category
@@ -162,6 +162,7 @@ class BranchUtil {
         if (mpEvent.getInfo() != null) {
             updateEventWithInfo(branchEvent, buo, mpEvent.getInfo());
         }
+        branchEvent.setDescription(mpEvent.getEventName());
         return branchEvent;
     }
 
