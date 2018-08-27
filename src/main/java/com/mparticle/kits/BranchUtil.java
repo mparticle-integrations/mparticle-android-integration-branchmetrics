@@ -69,17 +69,6 @@ class BranchUtil {
         BranchMParticlePromotionEventNames.put(Promotion.CLICK, "CLICK_PROMOTION");
     }
 
-
-    /**
-     * Get a matching {@link BRANCH_STANDARD_EVENT} for the MParticle event name provided
-     *
-     * @param mParticleEventName {@link String} MParticle event name
-     * @return {@link BRANCH_STANDARD_EVENT} if there a matching event for the given MParticle event
-     */
-    private String getBranchStandardEvent(String mParticleEventName) {
-        return BranchMParticleEventNames.get(mParticleEventName);
-    }
-
     /**
      * Translate the given MPEvent / Commerce event to {@link ProductCategory} and add to the BUO
      *
@@ -97,7 +86,7 @@ class BranchUtil {
 
     private BranchEvent createBranchEventFromEventName(String eventName) {
         BranchEvent branchEvent;
-        String branchStandardEvent = getBranchStandardEvent(eventName);
+        String branchStandardEvent = BranchMParticleEventNames.get(eventName);
         if (branchStandardEvent != null) {
             branchEvent = new BranchEvent(branchStandardEvent);
         } else {
