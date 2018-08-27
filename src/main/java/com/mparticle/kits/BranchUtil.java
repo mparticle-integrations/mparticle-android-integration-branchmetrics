@@ -47,6 +47,7 @@ class BranchUtil {
     }
 
     private final HashMap<String, String> BranchMParticleEventNames;
+    private final HashMap<String, String> BranchMParticlePromotionEventNames;
 
     BranchUtil() {
         BranchMParticleEventNames = new HashMap<>();
@@ -61,8 +62,10 @@ class BranchUtil {
         BranchMParticleEventNames.put(Product.DETAIL, BRANCH_STANDARD_EVENT.VIEW_ITEM.getName());
         BranchMParticleEventNames.put(Product.CHECKOUT_OPTION, "PURCHASE_OPTION");
         BranchMParticleEventNames.put(Product.REFUND, "REFUND");
-        BranchMParticleEventNames.put(Promotion.VIEW, "VIEW_PROMOTION");
-        BranchMParticleEventNames.put(Promotion.CLICK, "CLICK_PROMOTION");
+
+        BranchMParticlePromotionEventNames = new HashMap<>();
+        BranchMParticlePromotionEventNames.put(Promotion.VIEW, "VIEW_PROMOTION");
+        BranchMParticlePromotionEventNames.put(Promotion.CLICK, "CLICK_PROMOTION");
     }
 
 
@@ -94,6 +97,18 @@ class BranchUtil {
     private BranchEvent createBranchEventFromEventName(String eventName) {
         BranchEvent branchEvent;
         String branchStandardEvent = getBranchStandardEvent(eventName);
+        if (branchStandardEvent != null) {
+            branchEvent = new BranchEvent(branchStandardEvent);
+        } else {
+            branchEvent = new BranchEvent(eventName.toUpperCase());
+        }
+        branchEvent.setDescription(eventName);
+        return branchEvent;
+    }
+
+    private BranchEvent createBranchEventFromPromotionEventName(String eventName) {
+        BranchEvent branchEvent;
+        String branchStandardEvent = BranchMParticlePromotionEventNames.get(eventName);
         if (branchStandardEvent != null) {
             branchEvent = new BranchEvent(branchStandardEvent);
         } else {
@@ -233,7 +248,12 @@ class BranchUtil {
     // Region Translate CommerceEvents
 
     BranchEvent createBranchEventFromMPCommerceEvent(CommerceEvent event) {
-        BranchEvent branchEvent = createBranchEventFromEventName(event.getProductAction().toLowerCase());
+        BranchEvent branchEvent;
+        if (event.getProductAction().toLowerCase() != null) {
+            branchEvent = createBranchEventFromEventName(event.getProductAction().toLowerCase());
+        } else if (event.getPromotionAction().toLowerCase() != null) {
+            branchEvent = createBranchEventFromPromotionEventName(event.getPromotionAction().toLowerCase());
+        }
         // Add all the products in the product list to Branch event
         if (event.getProducts() != null) {
             Map<String, String> additionalMetadata = new HashMap<>();
