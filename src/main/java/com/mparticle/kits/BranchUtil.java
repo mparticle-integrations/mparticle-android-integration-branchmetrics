@@ -113,7 +113,7 @@ class BranchUtil {
         if (branchStandardEvent != null) {
             branchEvent = new BranchEvent(branchStandardEvent);
         } else {
-            branchEvent = new BranchEvent(eventName.toUpperCase());
+            branchEvent = new BranchEvent(eventName);
         }
         branchEvent.setDescription(eventName);
         return branchEvent;
