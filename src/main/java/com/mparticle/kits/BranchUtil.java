@@ -150,87 +150,13 @@ class BranchUtil {
             buo.setTitle(mpEvent.getEventName());
         }
         if (mpEvent.getInfo() != null) {
-            BranchUtil.MapReader mapReader = new BranchUtil.MapReader(mpEvent.getInfo());
-            updateBranchEventWithCustomData(branchEvent, mapReader.getMap());
+            updateEventWithInfo(branchEvent, mpEvent.getInfo());
         }
         return branchEvent;
     }
 
-    private void updateEventWithInfo(BranchEvent event, BranchUniversalObject buo, Map<String, String> info) {
+    private void updateEventWithInfo(BranchEvent event, Map<String, String> info) {
         BranchUtil.MapReader mapReader = new BranchUtil.MapReader(info);
-
-        // Affiliation
-        String stringValue = mapReader.readOutString(CommerceEventUtils.Constants.ATT_AFFILIATION);
-        if (!TextUtils.isEmpty(stringValue)) {
-            event.setAffiliation(stringValue);
-        }
-
-        // Shipping
-        Double doubleVal = mapReader.readOutDouble(CommerceEventUtils.Constants.ATT_SHIPPING);
-        if (doubleVal != null) {
-            event.setShipping(doubleVal);
-        }
-        // Tax
-        doubleVal = mapReader.readOutDouble(CommerceEventUtils.Constants.ATT_TAX);
-        if (doubleVal != null) {
-            event.setTax(doubleVal);
-        }
-        // Transaction ID
-        stringValue = mapReader.readOutString(CommerceEventUtils.Constants.ATT_TRANSACTION_ID);
-        if (!TextUtils.isEmpty(stringValue)) {
-            event.setTransactionID(stringValue);
-        }
-        // Quantity
-        doubleVal = mapReader.readOutDouble(CommerceEventUtils.Constants.ATT_PRODUCT_QUANTITY);
-        if (doubleVal != null) {
-            buo.getContentMetadata().setQuantity(doubleVal);
-        }
-        // Variant
-        stringValue = mapReader.readOutString(CommerceEventUtils.Constants.ATT_PRODUCT_VARIANT);
-        if (!TextUtils.isEmpty(stringValue)) {
-            buo.getContentMetadata().setProductVariant(stringValue);
-        }
-        // Product ID
-        stringValue = mapReader.readOutString(CommerceEventUtils.Constants.ATT_PRODUCT_ID);
-        if (!TextUtils.isEmpty(stringValue)) {
-            buo.setCanonicalIdentifier(stringValue);
-        }
-        // Product Name
-        stringValue = mapReader.readOutString(CommerceEventUtils.Constants.ATT_PRODUCT_NAME);
-        if (!TextUtils.isEmpty(stringValue)) {
-            buo.getContentMetadata().setProductName(stringValue);
-        }
-        // Category
-        stringValue = mapReader.readOutString(CommerceEventUtils.Constants.ATT_PRODUCT_CATEGORY);
-        if (!TextUtils.isEmpty(stringValue)) {
-            BranchUtil.translateEventCategory(buo, stringValue);
-        }
-        // Brand
-        stringValue = mapReader.readOutString(CommerceEventUtils.Constants.ATT_PRODUCT_BRAND);
-        if (!TextUtils.isEmpty(stringValue)) {
-            buo.getContentMetadata().setProductBrand(stringValue);
-        }
-        // Coupon
-        stringValue = mapReader.readOutString(CommerceEventUtils.Constants.ATT_PRODUCT_COUPON_CODE);
-        if (!TextUtils.isEmpty(stringValue)) {
-            event.setCoupon(stringValue);
-        }
-        // Price
-        doubleVal = mapReader.readOutDouble(CommerceEventUtils.Constants.ATT_PRODUCT_PRICE);
-        if (doubleVal != null) {
-            buo.getContentMetadata().setPrice(doubleVal, null);
-        }
-        // Revenue
-        doubleVal = mapReader.readOutDouble(CommerceEventUtils.Constants.ATT_PRODUCT_TOTAL_AMOUNT);
-        if (doubleVal != null) {
-            event.setRevenue(doubleVal);
-        }
-        // Currency
-        stringValue = mapReader.readOutString(CommerceEventUtils.Constants.ATT_ACTION_CURRENCY_CODE);
-        if (!TextUtils.isEmpty(stringValue)) {
-            event.setCurrency(CurrencyType.getValue(stringValue));
-        }
-        // Add all other key values to custom metadata
         updateBranchEventWithCustomData(event, mapReader.getMap());
     }
 
