@@ -240,9 +240,9 @@ class BranchUtil {
 
     BranchEvent createBranchEventFromMPCommerceEvent(CommerceEvent event) {
         BranchEvent branchEvent;
-        if (event.getProductAction().toLowerCase() != null) {
+        if (event.getProductAction() != null) {
             branchEvent = createBranchEventFromEventName(event.getProductAction().toLowerCase());
-        } else if (event.getPromotionAction().toLowerCase() != null) {
+        } else if (event.getPromotionAction() != null) {
             branchEvent = createBranchEventFromPromotionEventName(event.getPromotionAction().toLowerCase());
         } else {
             branchEvent = createBranchEventFromEventName(MPEventKeys.impression.name());
