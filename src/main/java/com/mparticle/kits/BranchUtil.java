@@ -150,7 +150,8 @@ class BranchUtil {
             buo.setTitle(mpEvent.getEventName());
         }
         if (mpEvent.getInfo() != null) {
-            updateEventWithInfo(branchEvent, buo, mpEvent.getInfo());
+            BranchUtil.MapReader mapReader = new BranchUtil.MapReader(mpEvent.getInfo());
+            updateBranchEventWithCustomData(branchEvent, mapReader.getMap());
         }
         return branchEvent;
     }
