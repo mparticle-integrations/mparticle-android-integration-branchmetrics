@@ -137,7 +137,8 @@ class BranchUtil {
     // Region Translate MPEvents
 
     BranchEvent createBranchEventFromMPEvent(MPEvent mpEvent) {
-        BranchEvent branchEvent = createBranchEventFromEventName(mpEvent.getEventName());
+        BranchEvent branchEvent = new BranchEvent(mpEvent.getEventName());
+        branchEvent.setDescription(mpEvent.getEventName());
         BranchUniversalObject buo = new BranchUniversalObject();
         branchEvent.addContentItems(buo);
         // Apply event category
@@ -151,7 +152,6 @@ class BranchUtil {
         if (mpEvent.getInfo() != null) {
             updateEventWithInfo(branchEvent, buo, mpEvent.getInfo());
         }
-        branchEvent.setDescription(mpEvent.getEventName());
         return branchEvent;
     }
 
