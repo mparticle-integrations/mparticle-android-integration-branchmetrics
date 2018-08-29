@@ -7,6 +7,7 @@ import com.mparticle.MParticle;
 import com.mparticle.commerce.CommerceEvent;
 import com.mparticle.commerce.Impression;
 import com.mparticle.commerce.Product;
+import com.mparticle.commerce.Promotion;
 import com.mparticle.commerce.TransactionAttributes;
 
 import java.util.HashMap;
@@ -45,33 +46,27 @@ class BranchUtil {
         product_category
     }
 
-    private final HashMap<String, BRANCH_STANDARD_EVENT> BranchMParticleEventNames;
+    private final HashMap<String, String> BranchMParticleEventNames;
+    private final HashMap<String, String> BranchMParticlePromotionEventNames;
 
     BranchUtil() {
         BranchMParticleEventNames = new HashMap<>();
         // Mapping MParticle Commerce Event names to possible matches in Branch events
-        BranchMParticleEventNames.put(Product.ADD_TO_CART, BRANCH_STANDARD_EVENT.ADD_TO_CART);
-        BranchMParticleEventNames.put(Product.ADD_TO_WISHLIST, BRANCH_STANDARD_EVENT.ADD_TO_WISHLIST);
-        BranchMParticleEventNames.put(Product.CHECKOUT, BRANCH_STANDARD_EVENT.INITIATE_PURCHASE);
-        BranchMParticleEventNames.put(Product.CLICK, BRANCH_STANDARD_EVENT.VIEW_ITEM);
-        BranchMParticleEventNames.put(Product.PURCHASE, BRANCH_STANDARD_EVENT.PURCHASE);
-        BranchMParticleEventNames.put(Product.DETAIL, BRANCH_STANDARD_EVENT.VIEW_ITEM);
-        BranchMParticleEventNames.put(Product.CHECKOUT_OPTION, BRANCH_STANDARD_EVENT.INITIATE_PURCHASE);
+        BranchMParticleEventNames.put(Product.ADD_TO_CART, BRANCH_STANDARD_EVENT.ADD_TO_CART.getName());
+        BranchMParticleEventNames.put(Product.REMOVE_FROM_CART, "REMOVE_FROM_CART");
+        BranchMParticleEventNames.put(Product.ADD_TO_WISHLIST, BRANCH_STANDARD_EVENT.ADD_TO_WISHLIST.getName());
+        BranchMParticleEventNames.put(Product.REMOVE_FROM_WISHLIST, "REMOVE_FROM_WISHLIST");
+        BranchMParticleEventNames.put(Product.CHECKOUT, BRANCH_STANDARD_EVENT.INITIATE_PURCHASE.getName());
+        BranchMParticleEventNames.put(Product.CLICK, "CLICK_ITEM");
+        BranchMParticleEventNames.put(Product.PURCHASE, BRANCH_STANDARD_EVENT.PURCHASE.getName());
+        BranchMParticleEventNames.put(Product.DETAIL, BRANCH_STANDARD_EVENT.VIEW_ITEM.getName());
+        BranchMParticleEventNames.put(Product.CHECKOUT_OPTION, "PURCHASE_OPTION");
+        BranchMParticleEventNames.put(Product.REFUND, "REFUND");
+        BranchMParticleEventNames.put(MPEventKeys.impression.name(), "IMPRESSION");
 
-        BranchMParticleEventNames.put(MParticle.EventType.Search.name(), BRANCH_STANDARD_EVENT.SEARCH);
-        BranchMParticleEventNames.put(MParticle.EventType.Transaction.name(), BRANCH_STANDARD_EVENT.PURCHASE);
-        BranchMParticleEventNames.put(MParticle.EventType.UserContent.name(), BRANCH_STANDARD_EVENT.VIEW_ITEM);
-    }
-
-
-    /**
-     * Get a matching {@link BRANCH_STANDARD_EVENT} for the MParticle event name provided
-     *
-     * @param mParticleEventName {@link String} MParticle event name
-     * @return {@link BRANCH_STANDARD_EVENT} if there a matching event for the given MParticle event
-     */
-    private BRANCH_STANDARD_EVENT getBranchStandardEvent(String mParticleEventName) {
-        return BranchMParticleEventNames.get(mParticleEventName);
+        BranchMParticlePromotionEventNames = new HashMap<>();
+        BranchMParticlePromotionEventNames.put(Promotion.VIEW, "VIEW_PROMOTION");
+        BranchMParticlePromotionEventNames.put(Promotion.CLICK, "CLICK_PROMOTION");
     }
 
     /**
@@ -91,12 +86,25 @@ class BranchUtil {
 
     private BranchEvent createBranchEventFromEventName(String eventName) {
         BranchEvent branchEvent;
-        BRANCH_STANDARD_EVENT branchStandardEvent = getBranchStandardEvent(eventName);
+        String branchStandardEvent = BranchMParticleEventNames.get(eventName);
         if (branchStandardEvent != null) {
             branchEvent = new BranchEvent(branchStandardEvent);
         } else {
-            branchEvent = new BranchEvent(eventName.toUpperCase());
+            branchEvent = new BranchEvent(eventName);
         }
+        branchEvent.setDescription(eventName);
+        return branchEvent;
+    }
+
+    private BranchEvent createBranchEventFromPromotionEventName(String eventName) {
+        BranchEvent branchEvent;
+        String branchStandardEvent = BranchMParticlePromotionEventNames.get(eventName);
+        if (branchStandardEvent != null) {
+            branchEvent = new BranchEvent(branchStandardEvent);
+        } else {
+            branchEvent = new BranchEvent(eventName);
+        }
+        branchEvent.setDescription(eventName);
         return branchEvent;
     }
 
@@ -129,7 +137,8 @@ class BranchUtil {
     // Region Translate MPEvents
 
     BranchEvent createBranchEventFromMPEvent(MPEvent mpEvent) {
-        BranchEvent branchEvent = createBranchEventFromEventName(mpEvent.getEventType().name());
+        BranchEvent branchEvent = new BranchEvent(mpEvent.getEventName());
+        branchEvent.setDescription(mpEvent.getEventName());
         BranchUniversalObject buo = new BranchUniversalObject();
         branchEvent.addContentItems(buo);
         // Apply event category
@@ -141,86 +150,13 @@ class BranchUtil {
             buo.setTitle(mpEvent.getEventName());
         }
         if (mpEvent.getInfo() != null) {
-            updateEventWithInfo(branchEvent, buo, mpEvent.getInfo());
+            updateEventWithInfo(branchEvent, mpEvent.getInfo());
         }
         return branchEvent;
     }
 
-    private void updateEventWithInfo(BranchEvent event, BranchUniversalObject buo, Map<String, String> info) {
+    private void updateEventWithInfo(BranchEvent event, Map<String, String> info) {
         BranchUtil.MapReader mapReader = new BranchUtil.MapReader(info);
-
-        // Affiliation
-        String stringValue = mapReader.readOutString(CommerceEventUtils.Constants.ATT_AFFILIATION);
-        if (!TextUtils.isEmpty(stringValue)) {
-            event.setAffiliation(stringValue);
-        }
-
-        // Shipping
-        Double doubleVal = mapReader.readOutDouble(CommerceEventUtils.Constants.ATT_SHIPPING);
-        if (doubleVal != null) {
-            event.setShipping(doubleVal);
-        }
-        // Tax
-        doubleVal = mapReader.readOutDouble(CommerceEventUtils.Constants.ATT_TAX);
-        if (doubleVal != null) {
-            event.setTax(doubleVal);
-        }
-        // Transaction ID
-        stringValue = mapReader.readOutString(CommerceEventUtils.Constants.ATT_TRANSACTION_ID);
-        if (!TextUtils.isEmpty(stringValue)) {
-            event.setTransactionID(stringValue);
-        }
-        // Quantity
-        doubleVal = mapReader.readOutDouble(CommerceEventUtils.Constants.ATT_PRODUCT_QUANTITY);
-        if (doubleVal != null) {
-            buo.getContentMetadata().setQuantity(doubleVal);
-        }
-        // Variant
-        stringValue = mapReader.readOutString(CommerceEventUtils.Constants.ATT_PRODUCT_VARIANT);
-        if (!TextUtils.isEmpty(stringValue)) {
-            buo.getContentMetadata().setProductVariant(stringValue);
-        }
-        // Product ID
-        stringValue = mapReader.readOutString(CommerceEventUtils.Constants.ATT_PRODUCT_ID);
-        if (!TextUtils.isEmpty(stringValue)) {
-            buo.setCanonicalIdentifier(stringValue);
-        }
-        // Product Name
-        stringValue = mapReader.readOutString(CommerceEventUtils.Constants.ATT_PRODUCT_NAME);
-        if (!TextUtils.isEmpty(stringValue)) {
-            buo.getContentMetadata().setProductName(stringValue);
-        }
-        // Category
-        stringValue = mapReader.readOutString(CommerceEventUtils.Constants.ATT_PRODUCT_CATEGORY);
-        if (!TextUtils.isEmpty(stringValue)) {
-            BranchUtil.translateEventCategory(buo, stringValue);
-        }
-        // Brand
-        stringValue = mapReader.readOutString(CommerceEventUtils.Constants.ATT_PRODUCT_BRAND);
-        if (!TextUtils.isEmpty(stringValue)) {
-            buo.getContentMetadata().setProductBrand(stringValue);
-        }
-        // Coupon
-        stringValue = mapReader.readOutString(CommerceEventUtils.Constants.ATT_PRODUCT_COUPON_CODE);
-        if (!TextUtils.isEmpty(stringValue)) {
-            event.setCoupon(stringValue);
-        }
-        // Price
-        doubleVal = mapReader.readOutDouble(CommerceEventUtils.Constants.ATT_PRODUCT_PRICE);
-        if (doubleVal != null) {
-            buo.getContentMetadata().setPrice(doubleVal, null);
-        }
-        // Revenue
-        doubleVal = mapReader.readOutDouble(CommerceEventUtils.Constants.ATT_PRODUCT_TOTAL_AMOUNT);
-        if (doubleVal != null) {
-            event.setRevenue(doubleVal);
-        }
-        // Currency
-        stringValue = mapReader.readOutString(CommerceEventUtils.Constants.ATT_ACTION_CURRENCY_CODE);
-        if (!TextUtils.isEmpty(stringValue)) {
-            event.setCurrency(CurrencyType.getValue(stringValue));
-        }
-        // Add all other key values to custom metadata
         updateBranchEventWithCustomData(event, mapReader.getMap());
     }
 
@@ -230,7 +166,14 @@ class BranchUtil {
     // Region Translate CommerceEvents
 
     BranchEvent createBranchEventFromMPCommerceEvent(CommerceEvent event) {
-        BranchEvent branchEvent = createBranchEventFromEventName(event.getProductAction().toLowerCase());
+        BranchEvent branchEvent;
+        if (event.getProductAction() != null) {
+            branchEvent = createBranchEventFromEventName(event.getProductAction());
+        } else if (event.getPromotionAction() != null) {
+            branchEvent = createBranchEventFromPromotionEventName(event.getPromotionAction());
+        } else {
+            branchEvent = createBranchEventFromEventName(MPEventKeys.impression.name());
+        }
         // Add all the products in the product list to Branch event
         if (event.getProducts() != null) {
             Map<String, String> additionalMetadata = new HashMap<>();
