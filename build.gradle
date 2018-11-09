@@ -13,10 +13,10 @@ apply plugin: 'com.mparticle.kit'
 
 android {
     defaultConfig {
-        minSdkVersion 15
+        minSdkVersion 16
     }
 }
 
 dependencies {
-    api 'io.branch.sdk.android:library:2.19.3'
+    api 'io.branch.sdk.android:library:3.0.0'
 }
