@@ -57,7 +57,7 @@ public class BranchMetricsKit extends KitIntegration implements
         branchUtil = new BranchUtil();
         Branch.disableDeviceIDFetch(MParticle.isAndroidIdDisabled());
         io.branch.referral.BranchUtil.setPluginType(io.branch.referral.BranchUtil.PluginType.Segment);
-        io.branch.referral.BranchUtil.setPluginVersion(BuildConfig.VERSION_NAME);
+        io.branch.referral.BranchUtil.setPluginVersion(getClass().getPackage() != null ? getClass().getPackage().getSpecificationVersion() : "0" );
         Branch.getAutoInstance(getContext().getApplicationContext(), getSettings().get(BRANCH_APP_KEY)).initSession(this);
         if (Logger.getMinLogLevel() != MParticle.LogLevel.NONE) {
             Branch.enableLogging();
