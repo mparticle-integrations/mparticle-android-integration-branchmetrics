@@ -202,6 +202,9 @@ class BranchUtil {
         if (event.getTransactionAttributes() != null) {
             updateBranchEventWithTransactionAttributes(branchEvent, event.getTransactionAttributes());
         }
+        if (event.getCustomAttributes() != null) {
+            updateBranchEventWithCustomData(branchEvent, event.getCustomAttributes());
+        }
         if (!TextUtils.isEmpty(event.getProductListName())) {
             branchEvent.addCustomDataProperty(BranchUtil.MPEventKeys.product_list_name.name(), event.getProductListName());
         }
