@@ -304,6 +304,9 @@ class BranchUtil {
     void updateBranchEventWithCustomData(BranchEvent branchEvent, Map<String, String> eventAttributes) {
         for (String key : eventAttributes.keySet()) {
             branchEvent.addCustomDataProperty(key, eventAttributes.get(key));
+            if (key.equals("customer_event_alias")) {
+                branchEvent.setCustomerEventAlias(eventAttributes.get(key));
+            }
         }
     }
 
