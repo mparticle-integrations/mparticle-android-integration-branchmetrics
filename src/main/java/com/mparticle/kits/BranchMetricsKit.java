@@ -2,14 +2,14 @@ package com.mparticle.kits;
 
 import android.content.Context;
 import android.content.Intent;
-import android.text.TextUtils;
+import android.support.annotation.NonNull;
 
 import com.mparticle.AttributionError;
 import com.mparticle.AttributionResult;
 import com.mparticle.MPEvent;
 import com.mparticle.MParticle;
 import com.mparticle.commerce.CommerceEvent;
-import com.mparticle.internal.KitManager;
+import com.mparticle.identity.MParticleUser;
 import com.mparticle.internal.Logger;
 
 import org.json.JSONObject;
@@ -35,10 +35,14 @@ public class BranchMetricsKit extends KitIntegration implements
         KitIntegration.CommerceListener,
         KitIntegration.AttributeListener,
         KitIntegration.ApplicationStateListener,
+        KitIntegration.IdentityListener,
         Branch.BranchReferralInitListener {
 
     private String BRANCH_APP_KEY = "branchKey";
     private static final String FORWARD_SCREEN_VIEWS = "forwardScreenViews";
+    private static final String USER_IDENTIFICATION_TYPE = "userIdentificationType";
+    private boolean isMpidIdentityType = false;
+    MParticle.IdentityType identityType = MParticle.IdentityType.CustomerId;
     private boolean mSendScreenEvents;
     private BranchUtil branchUtil;
 
@@ -63,7 +67,21 @@ public class BranchMetricsKit extends KitIntegration implements
         }
         String sendScreenEvents = settings.get(FORWARD_SCREEN_VIEWS);
         mSendScreenEvents = sendScreenEvents != null && sendScreenEvents.equalsIgnoreCase("true");
+        setIdentityType(settings);
         return null;
+    }
+
+    void setIdentityType(Map<String, String> settings) {
+        String userIdentificationType = settings.get(USER_IDENTIFICATION_TYPE);
+        if (!KitUtils.isEmpty(userIdentificationType)) {
+            if (userIdentificationType.equals("MPID")) {
+                isMpidIdentityType = true;
+            } else if(userIdentificationType.equals("Email")) {
+                identityType = null;
+            } else {
+                identityType = MParticle.IdentityType.valueOf(userIdentificationType);
+            }
+        }
     }
 
     @Override
@@ -161,17 +179,10 @@ public class BranchMetricsKit extends KitIntegration implements
 
     @Override
     public void setUserIdentity(MParticle.IdentityType identityType, String s) {
-        if (identityType == MParticle.IdentityType.CustomerId && !TextUtils.isEmpty(s)) {
-            getBranch().setIdentity(s);
-        }
     }
 
     @Override
     public void removeUserIdentity(MParticle.IdentityType identityType) {
-        // Logout the current user from Branch when Identity is removed.
-        if (identityType == MParticle.IdentityType.CustomerId) {
-            getBranch().logout();
-        }
     }
 
     @Override
@@ -181,6 +192,45 @@ public class BranchMetricsKit extends KitIntegration implements
         messageList.add(ReportingMessage.logoutMessage(this));
         return messageList;
     }
+
+    @Override
+    public void onIdentifyCompleted(MParticleUser mParticleUser, FilteredIdentityApiRequest filteredIdentityApiRequest) {
+        updateUser(mParticleUser);
+    }
+
+    @Override
+    public void onLoginCompleted(MParticleUser mParticleUser, FilteredIdentityApiRequest filteredIdentityApiRequest) {
+        updateUser(mParticleUser);
+    }
+
+    @Override
+    public void onLogoutCompleted(MParticleUser mParticleUser, FilteredIdentityApiRequest filteredIdentityApiRequest) {
+        updateUser(mParticleUser);
+    }
+
+    @Override
+    public void onModifyCompleted(MParticleUser mParticleUser, FilteredIdentityApiRequest filteredIdentityApiRequest) {
+        updateUser(mParticleUser);
+    }
+
+    @Override
+    public void onUserIdentified(MParticleUser mParticleUser) {
+
+    }
+
+    private void updateUser(@NonNull MParticleUser mParticleUser) {
+        String identity = null;
+        if (isMpidIdentityType) {
+            identity = String.valueOf(mParticleUser.getId());
+        } else if (identityType != null ) {
+            String mPIdentity = mParticleUser.getUserIdentities().get(identityType);
+            if (mPIdentity != null) {
+                identity = mPIdentity;
+            }
+        }
+        getBranch().setIdentity(identity);
+    }
+
 
     /**
      * Don't do anything here - we make the call to get the latest deep link info during onResume, below.
@@ -210,5 +260,4 @@ public class BranchMetricsKit extends KitIntegration implements
     public void onApplicationBackground() {
 
     }
-
 }
