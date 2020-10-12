@@ -2,7 +2,7 @@ package com.mparticle.kits;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.mparticle.AttributionError;
 import com.mparticle.AttributionResult;
