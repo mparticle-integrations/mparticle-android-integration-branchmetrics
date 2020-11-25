@@ -244,10 +244,12 @@ public class BranchMetricsKit extends KitIntegration implements
             getKitManager().onResult(result);
         }
         if (branchError != null) {
-            AttributionError error = new AttributionError()
-                    .setMessage(branchError.toString())
-                    .setServiceProviderId(this.getConfiguration().getKitId());
-            getKitManager().onError(error);
+            if (branchError.getErrorCode() != BranchError.ERR_BRANCH_ALREADY_INITIALIZED) {
+                AttributionError error = new AttributionError()
+                        .setMessage(branchError.toString())
+                        .setServiceProviderId(this.getConfiguration().getKitId());
+                getKitManager().onError(error);
+            }
         }
     }
 
