@@ -15,6 +15,7 @@ import com.mparticle.internal.Logger;
 import org.json.JSONObject;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -131,10 +132,12 @@ public class BranchMetricsKit extends KitIntegration implements
     @Override
     public List<ReportingMessage> logScreen(String screenName, Map<String, String> eventAttributes) {
         if (mSendScreenEvents) {
-            BranchEvent logScreenEvent = new BranchEvent(BRANCH_STANDARD_EVENT.VIEW_ITEM);
+            BranchEvent logScreenEvent = new BranchEvent(screenName);
+            if (eventAttributes == null) {
+                eventAttributes = new HashMap<>();
+            }
             branchUtil.updateBranchEventWithCustomData(logScreenEvent, eventAttributes);
             logScreenEvent.logEvent(getContext());
-
             List<ReportingMessage> messages = new LinkedList<>();
             messages.add(new ReportingMessage(this, ReportingMessage.MessageType.SCREEN_VIEW, System.currentTimeMillis(), eventAttributes));
             return messages;
