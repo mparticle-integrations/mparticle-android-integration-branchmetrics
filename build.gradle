@@ -22,5 +22,5 @@ android {
 }
 
 dependencies {
-    api 'io.branch.sdk.android:library:5.0.3'
+    api 'io.branch.sdk.android:library:5.0.8'
 }
