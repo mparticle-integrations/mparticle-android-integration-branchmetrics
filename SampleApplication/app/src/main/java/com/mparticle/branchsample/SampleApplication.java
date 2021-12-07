@@ -81,8 +81,9 @@ public class SampleApplication extends Application implements AttributionListene
 //            if (params.optBoolean("+clicked_branch_link", false)) {
 //                //handle the Branch link click
 //            }
-            
-            branchEventCallback.onBranchInitialised(params);
+            if (branchEventCallback != null) {
+                branchEventCallback.onBranchInitialised(params);
+            }
         }
     }
     
