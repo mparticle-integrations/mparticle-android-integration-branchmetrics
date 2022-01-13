@@ -60,7 +60,7 @@ public class BranchMetricsKit extends KitIntegration implements
     @Override
     protected List<ReportingMessage> onKitCreate(Map<String, String> settings, Context context) {
         branchUtil = new BranchUtil();
-        Branch.disableDeviceIDFetch(MParticle.isAndroidIdDisabled());
+        Branch.disableDeviceIDFetch(!MParticle.isAndroidIdEnabled());
         Branch.registerPlugin("mParticle", getClass().getPackage() != null ? getClass().getPackage().getSpecificationVersion() : "0" );
         Branch.getAutoInstance(getContext().getApplicationContext(), getSettings().get(BRANCH_APP_KEY)).sessionBuilder(null).withCallback(this).init();
         if (Logger.getMinLogLevel() != MParticle.LogLevel.NONE) {
