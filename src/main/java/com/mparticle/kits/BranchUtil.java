@@ -149,8 +149,8 @@ class BranchUtil {
         if (!TextUtils.isEmpty(mpEvent.getEventName())) {
             buo.setTitle(mpEvent.getEventName());
         }
-        if (mpEvent.getInfo() != null) {
-            updateEventWithInfo(branchEvent, mpEvent.getInfo());
+        if (mpEvent.getCustomAttributeStrings() != null) {
+            updateEventWithInfo(branchEvent, mpEvent.getCustomAttributeStrings());
         }
         return branchEvent;
     }
@@ -203,7 +203,7 @@ class BranchUtil {
             updateBranchEventWithTransactionAttributes(branchEvent, event.getTransactionAttributes());
         }
         if (event.getCustomAttributes() != null) {
-            updateBranchEventWithCustomData(branchEvent, event.getCustomAttributes());
+            updateBranchEventWithCustomData(branchEvent, event.getCustomAttributeStrings());
         }
         if (!TextUtils.isEmpty(event.getProductListName())) {
             branchEvent.addCustomDataProperty(BranchUtil.MPEventKeys.product_list_name.name(), event.getProductListName());
