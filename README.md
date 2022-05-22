@@ -16,7 +16,7 @@ This repository contains the [Branch](https://www.branch.io/) integration for th
 
 ### Documentation
 
-[Branch integration](http://docs.mparticle.com/?java#branch-metrics)
+[Branch integration](https://docs.mparticle.com/integrations/branch-metrics/event/)
 
 ### License
 
