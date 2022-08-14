@@ -21,10 +21,10 @@ apply plugin: 'kotlin-android'
 
 android {
     defaultConfig {
-        minSdkVersion 16
+        minSdkVersion 21
     }
 }
 
 dependencies {
-    api 'io.branch.sdk.android:library:5.1.5'
+    api 'io.branch.sdk.android:library:5.2.1'
 }
