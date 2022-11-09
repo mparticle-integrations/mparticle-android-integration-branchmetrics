@@ -40,15 +40,17 @@ class BranchMetricsKit : KitIntegration(), KitIntegration.EventListener, Commerc
     override fun getName(): String = NAME
 
     override fun onKitCreate(
-        settings: Map<String, String>,
-        context: Context
-    ): List<ReportingMessage> {
+        settings: Map<String?, String?>,
+        context: Context?
+    ): List<ReportingMessage?>? {
         branchUtil = BranchUtil()
         Branch.disableDeviceIDFetch(!MParticle.isAndroidIdEnabled())
         Branch.registerPlugin(
             "mParticle",
-            javaClass.getPackage()?.specificationVersion ?: "0"
+            if (javaClass.getPackage() != null) javaClass.getPackage()?.specificationVersion else "0"
         )
+        getSettings()[BRANCH_APP_KEY]
+            ?.let { Branch.getAutoInstance(getContext().applicationContext, it) }
         Branch.sessionBuilder(null).withCallback(this).init()
         if (Logger.getMinLogLevel() != MParticle.LogLevel.NONE) {
             Branch.enableLogging()
@@ -57,10 +59,10 @@ class BranchMetricsKit : KitIntegration(), KitIntegration.EventListener, Commerc
         mSendScreenEvents =
             sendScreenEvents != null && sendScreenEvents.equals("true", ignoreCase = true)
         setIdentityType(settings)
-        return emptyList()
+        return null
     }
 
-    fun setIdentityType(settings: Map<String, String>) {
+    fun setIdentityType(settings: Map<String?, String?>) {
         val userIdentificationType = settings[USER_IDENTIFICATION_TYPE]
 
         userIdentificationType?.let {
