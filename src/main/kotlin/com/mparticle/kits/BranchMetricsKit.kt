@@ -49,6 +49,8 @@ class BranchMetricsKit : KitIntegration(), KitIntegration.EventListener, Commerc
             "mParticle",
             javaClass.getPackage()?.specificationVersion ?: "0"
         )
+        getSettings()[BRANCH_APP_KEY]
+            ?.let { Branch.getAutoInstance(getContext().applicationContext, it) }
         Branch.sessionBuilder(null).withCallback(this).init()
         if (Logger.getMinLogLevel() != MParticle.LogLevel.NONE) {
             Branch.enableLogging()
