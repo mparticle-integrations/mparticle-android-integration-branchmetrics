@@ -124,7 +124,7 @@ class BranchMetricsKit : KitIntegration(), KitIntegration.EventListener, Commerc
 
     override fun logScreen(
         screenName: String,
-        eventAttributes: Map<String, String>
+        eventAttributes: Map<String, String>?
     ): List<ReportingMessage> {
         var eventAttributes: Map<String, String>? = eventAttributes
         return if (mSendScreenEvents) {
