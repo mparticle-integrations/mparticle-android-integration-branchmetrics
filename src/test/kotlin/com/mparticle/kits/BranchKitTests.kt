@@ -1,6 +1,7 @@
 package com.mparticle.kits
 
 import android.content.Context
+import com.mparticle.MParticleOptions
 import org.junit.Assert
 import org.junit.Test
 import org.mockito.Mockito
@@ -38,11 +39,12 @@ class BranchKitTests {
     @Test
     @Throws(Exception::class)
     fun testClassName() {
-        val factory = KitIntegrationFactory()
-        val integrations = factory.knownIntegrations
+        val options = Mockito.mock(MParticleOptions::class.java)
+        val factory = KitIntegrationFactory(options)
+        val integrations = factory.supportedKits.values
         val className = kit.javaClass.name
         for (integration in integrations) {
-            if (integration.value == className) {
+            if (integration.name == className) {
                 return
             }
         }
