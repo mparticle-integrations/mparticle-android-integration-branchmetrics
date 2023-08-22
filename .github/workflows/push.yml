@@ -8,3 +8,5 @@ jobs:
   push-check:
     name: "Push Check"
     uses: mParticle/mparticle-workflows/.github/workflows/android-kit-push.yml@main
+    with:
+      branch_name: ${{ github.head_ref }}
