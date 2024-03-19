@@ -14,7 +14,7 @@ import com.mparticle.kits.KitIntegration.*
 import io.branch.referral.Branch
 import io.branch.referral.Branch.BranchReferralInitListener
 import io.branch.referral.BranchError
-import io.branch.referral.PrefHelper
+import io.branch.referral.BranchLogger
 import io.branch.referral.util.BranchEvent
 import org.json.JSONObject
 import java.math.BigDecimal
@@ -151,10 +151,11 @@ class BranchMetricsKit : KitIntegration(), KitIntegration.EventListener, Commerc
     }
 
     private val branch: Branch?
-        get() = settings[BRANCH_APP_KEY]?.let { Branch.getInstance(context, it) }
+        get() = settings[BRANCH_APP_KEY]?.let { Branch.getInstance() }
+
 
     override fun setInstallReferrer(intent: Intent) {
-        PrefHelper.LogAlways("setInstallReferrer(intent) was ignored, INSTALL_REFERRER broadcast intent is deprecated, relevant data is now collected automatically using the Play Install Referrer Library bundled together with Branch SDK.")
+        BranchLogger.w("setInstallReferrer(intent) was ignored, INSTALL_REFERRER broadcast intent is deprecated, relevant data is now collected automatically using the Play Install Referrer Library bundled together with Branch SDK.")
     }
 
     override fun setUserAttribute(s: String, s1: String) {}
