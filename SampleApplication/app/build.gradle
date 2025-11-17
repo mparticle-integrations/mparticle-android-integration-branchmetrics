@@ -1,12 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 27
+    namespace "com.android.application"
+    compileSdkVersion 33
     buildToolsVersion "27.0.3"
     defaultConfig {
         applicationId "com.mparticle.branchsample"
+        compileSdkVersion 33
         minSdkVersion 16
-        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -36,5 +37,5 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
-    api project(':local-mParticle-Branch-kit')
+    implementation project(':local-mParticle-Branch-kit')
 }
