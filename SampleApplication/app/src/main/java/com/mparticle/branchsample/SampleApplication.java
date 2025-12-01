@@ -15,7 +15,7 @@ import io.branch.referral.Branch;
 public class SampleApplication extends Application implements AttributionListener {
     private IBranchEvents branchEventCallback;
     private static SampleApplication instance;
-    
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -30,15 +30,15 @@ public class SampleApplication extends Application implements AttributionListene
                 //that is passed to the Branch SDK's initSession() API.
                 .logLevel(MParticle.LogLevel.VERBOSE)
                 .build();
-        
+
         MParticle.start(options);
     }
-    
+
     public static void setBranchEventCallback(IBranchEvents branchEventCallback) {
         instance.branchEventCallback = branchEventCallback;
     }
-    
-    
+
+
     /**
      * A few typical scenarios where this callback would be invoked:
      * <p>
@@ -86,7 +86,7 @@ public class SampleApplication extends Application implements AttributionListene
             }
         }
     }
-    
+
     @Override
     public void onError(AttributionError attributionError) {
         //if the Branch SDK returns an error, it will be surfaced here.
@@ -94,7 +94,7 @@ public class SampleApplication extends Application implements AttributionListene
             branchEventCallback.onBranchInitialised(new JSONObject());
         }
     }
-    
+
     public interface IBranchEvents {
         void onBranchInitialised(JSONObject params);
     }
