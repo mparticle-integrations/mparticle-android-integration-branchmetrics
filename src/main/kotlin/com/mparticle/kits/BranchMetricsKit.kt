@@ -44,7 +44,6 @@ class BranchMetricsKit : KitIntegration(), KitIntegration.EventListener, Commerc
         context: Context
     ): List<ReportingMessage> {
         branchUtil = BranchUtil()
-        Branch.disableDeviceIDFetch(!MParticle.isAndroidIdEnabled())
         Branch.registerPlugin(
             "mParticle",
             javaClass.getPackage()?.specificationVersion ?: "0"
