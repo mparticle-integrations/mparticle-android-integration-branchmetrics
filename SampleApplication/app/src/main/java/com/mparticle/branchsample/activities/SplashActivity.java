@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import androidx.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.mparticle.MPEvent;
 import com.mparticle.MParticle;
@@ -25,28 +25,28 @@ import java.util.Map;
  */
 
 public class SplashActivity extends AppCompatActivity implements SampleApplication.IBranchEvents {
-    
+
     private static final int SPLASH_DELAY = 1500;
-    
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash_activity);
         SampleApplication.setBranchEventCallback(this);
     }
-    
+
     @Override
     protected void onStart() {
         super.onStart();
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-            
-            
+
+
             }
         }, SPLASH_DELAY);
     }
-    
+
     /**
      * Note : Branch needs the new intents to be set to the activity if the launch mode is `SingleTask`
      **/
@@ -54,14 +54,14 @@ public class SplashActivity extends AppCompatActivity implements SampleApplicati
     protected void onNewIntent(Intent intent) {
         this.setIntent(intent);
     }
-    
+
     @Override
     public void onBranchInitialised(JSONObject params) {
         final Intent intent = new Intent(SplashActivity.this, HomeActivity.class);
         if (params.optBoolean("+clicked_branch_link")) {
             Map<String, String> infoMap = new HashMap<>();
             infoMap.put("Referred Link", params.optString("~referring_link"));
-            
+
             MPEvent event = new MPEvent.Builder("Referred Session", MParticle.EventType.UserContent)
                     .duration(300)
                     .info(infoMap)
@@ -77,5 +77,5 @@ public class SplashActivity extends AppCompatActivity implements SampleApplicati
             }
         }, 1500);
     }
-    
+
 }
