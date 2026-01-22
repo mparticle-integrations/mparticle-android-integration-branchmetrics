@@ -10,7 +10,11 @@ import com.mparticle.MParticle.IdentityType
 import com.mparticle.commerce.CommerceEvent
 import com.mparticle.identity.MParticleUser
 import com.mparticle.internal.Logger
-import com.mparticle.kits.KitIntegration.*
+import com.mparticle.kits.KitIntegration.ApplicationStateListener
+import com.mparticle.kits.KitIntegration.AttributeListener
+import com.mparticle.kits.KitIntegration.CommerceListener
+import com.mparticle.kits.KitIntegration.EventListener
+import com.mparticle.kits.KitIntegration.IdentityListener
 import io.branch.referral.Branch
 import io.branch.referral.Branch.BranchReferralInitListener
 import io.branch.referral.BranchError
@@ -18,7 +22,8 @@ import io.branch.referral.BranchLogger
 import io.branch.referral.util.BranchEvent
 import org.json.JSONObject
 import java.math.BigDecimal
-import java.util.*
+import java.util.HashMap
+import java.util.LinkedList
 
 /**
  *
@@ -27,9 +32,15 @@ import java.util.*
  *
  *
  */
-class BranchMetricsKit : KitIntegration(), KitIntegration.EventListener, CommerceListener,
-    AttributeListener, ApplicationStateListener, IdentityListener, BranchReferralInitListener {
-    private val BRANCH_APP_KEY = "branchKey"
+class BranchMetricsKit :
+    KitIntegration(),
+    EventListener,
+    CommerceListener,
+    AttributeListener,
+    ApplicationStateListener,
+    IdentityListener,
+    BranchReferralInitListener {
+    private val branchAppKey = "branchKey"
     private var isMpidIdentityType = false
     var identityType: IdentityType? = IdentityType.CustomerId
     private var mSendScreenEvents = false
@@ -41,14 +52,14 @@ class BranchMetricsKit : KitIntegration(), KitIntegration.EventListener, Commerc
 
     override fun onKitCreate(
         settings: Map<String, String>,
-        context: Context
+        context: Context,
     ): List<ReportingMessage> {
         branchUtil = BranchUtil()
         Branch.registerPlugin(
             "mParticle",
-            javaClass.getPackage()?.specificationVersion ?: "0"
+            javaClass.getPackage()?.specificationVersion ?: "0",
         )
-        getSettings()[BRANCH_APP_KEY]
+        getSettings()[branchAppKey]
             ?.let { Branch.getAutoInstance(getContext().applicationContext, it) }
         Branch.sessionBuilder(null).withCallback(this).init()
         if (Logger.getMinLogLevel() != MParticle.LogLevel.NONE) {
@@ -56,7 +67,8 @@ class BranchMetricsKit : KitIntegration(), KitIntegration.EventListener, Commerc
         }
         val sendScreenEvents = settings[FORWARD_SCREEN_VIEWS]
         mSendScreenEvents =
-            sendScreenEvents != null && sendScreenEvents.equals("true", ignoreCase = true)
+            sendScreenEvents != null &&
+            sendScreenEvents.equals("true", ignoreCase = true)
         setIdentityType(settings)
         return emptyList()
     }
@@ -83,21 +95,24 @@ class BranchMetricsKit : KitIntegration(), KitIntegration.EventListener, Commerc
                 this,
                 ReportingMessage.MessageType.OPT_OUT,
                 System.currentTimeMillis(),
-                null
-            )
+                null,
+            ),
         )
         return messages
     }
 
     override fun leaveBreadcrumb(s: String): List<ReportingMessage> = emptyList()
 
-    override fun logError(s: String, map: Map<String, String>): List<ReportingMessage> = emptyList()
+    override fun logError(
+        s: String,
+        map: Map<String, String>,
+    ): List<ReportingMessage> = emptyList()
+
     override fun logException(
         e: Exception,
         map: Map<String, String>,
-        s: String
+        s: String,
     ): List<ReportingMessage> = emptyList()
-
 
     override fun logEvent(event: MPEvent): List<ReportingMessage> {
         branchUtil?.createBranchEventFromMPEvent(event)?.logEvent(context)
@@ -110,9 +125,8 @@ class BranchMetricsKit : KitIntegration(), KitIntegration.EventListener, Commerc
         bigDecimal: BigDecimal,
         bigDecimal1: BigDecimal,
         s: String,
-        map: Map<String, String>
+        map: Map<String, String>,
     ): List<ReportingMessage> = emptyList()
-
 
     override fun logEvent(commerceEvent: CommerceEvent): List<ReportingMessage> {
         branchUtil?.createBranchEventFromMPCommerceEvent(commerceEvent)?.logEvent(context)
@@ -123,7 +137,7 @@ class BranchMetricsKit : KitIntegration(), KitIntegration.EventListener, Commerc
 
     override fun logScreen(
         screenName: String,
-        eventAttributes: Map<String, String>
+        eventAttributes: Map<String, String>,
     ): List<ReportingMessage> {
         var eventAttributes: Map<String, String>? = eventAttributes
         return if (mSendScreenEvents) {
@@ -140,8 +154,8 @@ class BranchMetricsKit : KitIntegration(), KitIntegration.EventListener, Commerc
                     this,
                     ReportingMessage.MessageType.SCREEN_VIEW,
                     System.currentTimeMillis(),
-                    eventAttributes
-                )
+                    eventAttributes,
+                ),
             )
             messages
         } else {
@@ -150,20 +164,40 @@ class BranchMetricsKit : KitIntegration(), KitIntegration.EventListener, Commerc
     }
 
     private val branch: Branch?
-        get() = settings[BRANCH_APP_KEY]?.let { Branch.getInstance() }
-
+        get() = settings[branchAppKey]?.let { Branch.getInstance() }
 
     override fun setInstallReferrer(intent: Intent) {
-        BranchLogger.w("setInstallReferrer(intent) was ignored, INSTALL_REFERRER broadcast intent is deprecated, relevant data is now collected automatically using the Play Install Referrer Library bundled together with Branch SDK.")
+        BranchLogger.w(
+            "setInstallReferrer(intent) was ignored, INSTALL_REFERRER broadcast intent is deprecated, relevant data is now collected automatically using the Play Install Referrer Library bundled together with Branch SDK.",
+        )
     }
 
-    override fun setUserAttribute(s: String, s1: String) {}
-    override fun setUserAttributeList(s: String, list: List<String>) {}
+    override fun setUserAttribute(
+        s: String,
+        s1: String,
+    ) {}
+
+    override fun setUserAttributeList(
+        s: String,
+        list: List<String>,
+    ) {}
+
     override fun supportsAttributeLists(): Boolean = true
-    override fun setAllUserAttributes(map: Map<String, String>, map1: Map<String, List<String>>) {}
+
+    override fun setAllUserAttributes(
+        map: Map<String, String>,
+        map1: Map<String, List<String>>,
+    ) {}
+
     override fun removeUserAttribute(s: String) {}
-    override fun setUserIdentity(identityType: IdentityType, s: String) {}
+
+    override fun setUserIdentity(
+        identityType: IdentityType,
+        s: String,
+    ) {}
+
     override fun removeUserIdentity(identityType: IdentityType) {}
+
     override fun logout(): List<ReportingMessage> {
         branch?.logout()
         val messageList: MutableList<ReportingMessage> = LinkedList()
@@ -173,28 +207,28 @@ class BranchMetricsKit : KitIntegration(), KitIntegration.EventListener, Commerc
 
     override fun onIdentifyCompleted(
         mParticleUser: MParticleUser,
-        filteredIdentityApiRequest: FilteredIdentityApiRequest
+        filteredIdentityApiRequest: FilteredIdentityApiRequest,
     ) {
         updateUser(mParticleUser)
     }
 
     override fun onLoginCompleted(
         mParticleUser: MParticleUser,
-        filteredIdentityApiRequest: FilteredIdentityApiRequest
+        filteredIdentityApiRequest: FilteredIdentityApiRequest,
     ) {
         updateUser(mParticleUser)
     }
 
     override fun onLogoutCompleted(
         mParticleUser: MParticleUser,
-        filteredIdentityApiRequest: FilteredIdentityApiRequest
+        filteredIdentityApiRequest: FilteredIdentityApiRequest,
     ) {
         updateUser(mParticleUser)
     }
 
     override fun onModifyCompleted(
         mParticleUser: MParticleUser,
-        filteredIdentityApiRequest: FilteredIdentityApiRequest
+        filteredIdentityApiRequest: FilteredIdentityApiRequest,
     ) {
         updateUser(mParticleUser)
     }
@@ -219,18 +253,23 @@ class BranchMetricsKit : KitIntegration(), KitIntegration.EventListener, Commerc
     /**
      * Don't do anything here - we make the call to get the latest deep link info during onResume, below.
      */
-    override fun onInitFinished(jsonResult: JSONObject?, branchError: BranchError?) {
+    override fun onInitFinished(
+        jsonResult: JSONObject?,
+        branchError: BranchError?,
+    ) {
         if (jsonResult != null && jsonResult.length() > 0) {
-            val result = AttributionResult()
-                .setParameters(jsonResult)
-                .setServiceProviderId(this.configuration.kitId)
+            val result =
+                AttributionResult()
+                    .setParameters(jsonResult)
+                    .setServiceProviderId(this.configuration.kitId)
             kitManager.onResult(result)
         }
         if (branchError != null) {
             if (branchError.errorCode != BranchError.ERR_BRANCH_ALREADY_INITIALIZED) {
-                val error = AttributionError()
-                    .setMessage(branchError.toString())
-                    .setServiceProviderId(this.configuration.kitId)
+                val error =
+                    AttributionError()
+                        .setMessage(branchError.toString())
+                        .setServiceProviderId(this.configuration.kitId)
                 kitManager.onError(error)
             }
         }

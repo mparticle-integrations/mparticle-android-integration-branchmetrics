@@ -29,22 +29,22 @@ internal class BranchUtil {
         ProductListName,
         ProductListSource,
         CheckoutOptions,
-        CheckoutStep
+        CheckoutStep,
     }
 
     internal enum class ExtraBranchEventKeys {
-        ProductCategory
+        ProductCategory,
     }
 
     private val branchMParticleEventNames = HashMap<String?, String>()
     private var branchMParticlePromotionEventNames = HashMap<String?, String>()
+
     private fun createBranchEventFromEventName(eventName: String?): BranchEvent {
         val branchEvent: BranchEvent
         val branchStandardEvent = branchMParticleEventNames[eventName]
         branchEvent = branchStandardEvent?.let { BranchEvent(it) } ?: BranchEvent(eventName)
         branchEvent.setDescription(eventName)
         return branchEvent
-
     }
 
     private fun createBranchEventFromPromotionEventName(eventName: String?): BranchEvent {
@@ -55,9 +55,11 @@ internal class BranchUtil {
         return branchEvent
     }
 
-    internal class MapReader(mapObject: Map<String, String>?) {
-
+    internal class MapReader(
+        mapObject: Map<String, String>?,
+    ) {
         private lateinit var mapObj: MutableMap<String, String>
+
         fun readOutString(key: String): String? = mapObj.remove(key)
 
         fun readOutDouble(key: String): Double? {
@@ -78,7 +80,6 @@ internal class BranchUtil {
             if (!mapObject.isNullOrEmpty()) {
                 this.mapObj = HashMap(mapObject)
             }
-
         }
     }
 
@@ -102,7 +103,10 @@ internal class BranchUtil {
         return branchEvent
     }
 
-    private fun updateEventWithInfo(event: BranchEvent, info: Map<String, String>?) {
+    private fun updateEventWithInfo(
+        event: BranchEvent,
+        info: Map<String, String>?,
+    ) {
         val mapReader = MapReader(info)
         updateBranchEventWithCustomData(event, mapReader.map)
     }
@@ -110,13 +114,14 @@ internal class BranchUtil {
     // End Region Translate MPEvents
     // Region Translate CommerceEvents
     fun createBranchEventFromMPCommerceEvent(event: CommerceEvent): BranchEvent {
-        val branchEvent: BranchEvent = if (event.productAction != null) {
-            createBranchEventFromEventName(event.productAction)
-        } else if (event.promotionAction != null) {
-            createBranchEventFromPromotionEventName(event.promotionAction)
-        } else {
-            createBranchEventFromEventName(MPEventKeys.Impression.name)
-        }
+        val branchEvent: BranchEvent =
+            if (event.productAction != null) {
+                createBranchEventFromEventName(event.productAction)
+            } else if (event.promotionAction != null) {
+                createBranchEventFromPromotionEventName(event.promotionAction)
+            } else {
+                createBranchEventFromEventName(MPEventKeys.Impression.name)
+            }
         // Add all the products in the product list to Branch event
         if (event.products != null) {
             val additionalMetadata = HashMap<String, String?>()
@@ -140,7 +145,7 @@ internal class BranchUtil {
                     branchEvent,
                     impression.products,
                     event,
-                    additionalMetadata
+                    additionalMetadata,
                 )
             }
         }
@@ -153,19 +158,19 @@ internal class BranchUtil {
         if (!TextUtils.isEmpty(event.productListName)) {
             branchEvent.addCustomDataProperty(
                 MPEventKeys.ProductListName.name,
-                event.productListName
+                event.productListName,
             )
         }
         if (!TextUtils.isEmpty(event.productListSource)) {
             branchEvent.addCustomDataProperty(
                 MPEventKeys.ProductListSource.name,
-                event.productListSource
+                event.productListSource,
             )
         }
         if (!TextUtils.isEmpty(event.checkoutOptions)) {
             branchEvent.addCustomDataProperty(
                 MPEventKeys.CheckoutOptions.name,
-                event.checkoutOptions
+                event.checkoutOptions,
             )
         }
         if (!TextUtils.isEmpty(event.screen)) {
@@ -175,7 +180,7 @@ internal class BranchUtil {
             try {
                 branchEvent.addCustomDataProperty(
                     MPEventKeys.CheckoutStep.name,
-                    event.checkoutStep.toString()
+                    event.checkoutStep.toString(),
                 )
             } catch (ignore: Exception) {
             }
@@ -190,7 +195,7 @@ internal class BranchUtil {
         branchEvent: BranchEvent,
         products: List<Product>?,
         event: CommerceEvent,
-        additionalMetadata: Map<String, String?>
+        additionalMetadata: Map<String, String?>,
     ) {
         if (products != null) {
             for (product in products) {
@@ -198,8 +203,8 @@ internal class BranchUtil {
                     createBranchUniversalObjectFromMProduct(
                         product,
                         event,
-                        additionalMetadata
-                    )
+                        additionalMetadata,
+                    ),
                 )
             }
         }
@@ -208,7 +213,7 @@ internal class BranchUtil {
     private fun createBranchUniversalObjectFromMProduct(
         product: Product,
         event: CommerceEvent,
-        additionalMetadata: Map<String, String?>?
+        additionalMetadata: Map<String, String?>?,
     ): BranchUniversalObject {
         val buo = BranchUniversalObject()
         if (!TextUtils.isEmpty(product.brand)) {
@@ -231,16 +236,17 @@ internal class BranchUtil {
         }
         if (product.position != null) {
             buo.contentMetadata.addCustomMetadata(
-                MPEventKeys.Position.name, (product.position).toString()
+                MPEventKeys.Position.name,
+                (product.position).toString(),
             )
         }
         buo.contentMetadata.setPrice(product.unitPrice, CurrencyType.getValue(event.currency))
         buo.contentMetadata.setQuantity(product.quantity)
         buo.contentMetadata.addCustomMetadata(
             MPEventKeys.Amount.name,
-            product.totalAmount.toString()
+            product.totalAmount.toString(),
         )
-        product.customAttributes?.let{
+        product.customAttributes?.let {
             addCustomDataToBranchUniversalObject(buo, it)
         }
         additionalMetadata?.let { addCustomDataToBranchUniversalObject(buo, it) }
@@ -249,7 +255,7 @@ internal class BranchUtil {
 
     private fun addCustomDataToBranchUniversalObject(
         buo: BranchUniversalObject,
-        customAttr: Map<String, String?>
+        customAttr: Map<String, String?>,
     ) {
         val contentMetadata = buo.contentMetadata
         for (key in customAttr.keys) {
@@ -259,7 +265,7 @@ internal class BranchUtil {
 
     private fun updateBranchEventWithTransactionAttributes(
         event: BranchEvent,
-        transAttr: TransactionAttributes
+        transAttr: TransactionAttributes,
     ) {
         if (!TextUtils.isEmpty(transAttr.affiliation)) {
             event.setAffiliation(transAttr.affiliation)
@@ -276,14 +282,14 @@ internal class BranchUtil {
         transAttr.shipping?.let {
             event.setShipping(it)
         }
-        transAttr.tax?.let{
+        transAttr.tax?.let {
             event.setTax(it)
         }
     }
 
     fun updateBranchEventWithCustomData(
         branchEvent: BranchEvent,
-        eventAttributes: Map<String, String>
+        eventAttributes: Map<String, String>,
     ) {
         for (key in eventAttributes.keys) {
             branchEvent.addCustomDataProperty(key, eventAttributes[key])
@@ -300,14 +306,17 @@ internal class BranchUtil {
          * @param buo          BUO representing content for the event
          * @param categoryName MPEvent / Commerce event category
          */
-        private fun translateEventCategory(buo: BranchUniversalObject, categoryName: String?) {
+        private fun translateEventCategory(
+            buo: BranchUniversalObject,
+            categoryName: String?,
+        ) {
             val category = ProductCategory.getValue(categoryName)
             if (category != null) {
                 buo.contentMetadata.setProductCategory(category)
             } else {
                 buo.contentMetadata.addCustomMetadata(
                     ExtraBranchEventKeys.ProductCategory.name,
-                    categoryName
+                    categoryName,
                 )
             }
         }

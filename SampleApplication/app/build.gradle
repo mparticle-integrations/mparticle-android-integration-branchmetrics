@@ -28,10 +28,10 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.8.0'
     implementation 'com.android.installreferrer:installreferrer:2.2'
-    
+
     // Local project dependency
     api project(':local-mParticle-Branch-kit')
-    
+
     // Uncomment below to use published version instead
     // implementation 'com.mparticle:android-branch-kit:5+'
 
